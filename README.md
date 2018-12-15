@@ -1,5 +1,5 @@
 # FURY
-I know it sound promising, but it's a big project of mine, want to share it, feel free to collaborate, i keep pushing the updates.  
+I know it sound promising, but it's a big project of mine, feel free to collaborate, i keep pushing the updates.  
 
 ![box3d](https://github.com/xeuus/fury/raw/master/screen.png)
 
