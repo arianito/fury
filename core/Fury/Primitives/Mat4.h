@@ -46,21 +46,21 @@ struct Mat4 : Uniform<4, 4> {
 
     Mat4 Invert() const;
 
-    static const Mat4 Invert(const Mat4 &a);
+    static Mat4 Invert(const Mat4 &a);
 
-    static const F32 Determinant(const Mat4 &a);
+    static F32 Determinant(const Mat4 &a);
 
-    static const Mat4 CreateTranslation(const Uniform<3, 1> &a);
+    static Mat4 CreateTranslation(const Uniform<3, 1> &a);
 
-    static const Mat4 FromQuaternion(const Uniform<4, 1> &a);
+    static Mat4 FromQuaternion(const Uniform<4, 1> &a);
 
-    static const Mat4 CreateScale(const Uniform<3, 1> &a);
+    static Mat4 CreateScale(const Uniform<3, 1> &a);
 
-    static const Mat4 Perspective(const F32 &fov, const F32 &aspect, const F32 &near, const F32 &far);
+    static Mat4 Perspective(const F32 &fov, const F32 &aspect, const F32 &near, const F32 &far);
 
-    static const Mat4 Orthographic(const F32 &top, const F32 &right, const F32 &bottom, const F32 &left, const F32 &near, const F32 &far, const F32 &zoom = 1.0f);
+    static Mat4 Orthographic(const F32 &top, const F32 &right, const F32 &bottom, const F32 &left, const F32 &near, const F32 &far, const F32 &zoom = 1.0f);
 
-    static const Mat4 LookAt(const Vec3 &eye, const Vec3 &center, const Vec3 &up);
+    static Mat4 LookAt(const Vec3 &eye, const Vec3 &center, const Vec3 &up);
 
 
     friend Mat4 operator*(const Mat4 &a, const Mat4 &b) {

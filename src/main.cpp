@@ -27,7 +27,7 @@ class Win1 : public Window {
 
         Input::Init(this->window);
 
-        sh.Create(Path::local("..", "src", "z04_ok", "shader"));
+        sh.Create(Path::local("../src/shader"));
 
 
         GLfloat vertices[] = {
@@ -103,8 +103,6 @@ class Win1 : public Window {
     }
 
     void FixedUpdate() override {
-
-
     }
 
     void Update() override {
@@ -112,7 +110,7 @@ class Win1 : public Window {
         Input::Update();
 
 
-        F32 deltaTime = Time::SmoothDeltaTime;
+        F32 deltaTime = Time::DeltaTime;
 
         pitch -= Input::GetAxis(Axis::Horizontal) * deltaTime;
         yaw += Input::GetAxis(Axis::Vertical) * deltaTime;
@@ -120,14 +118,13 @@ class Win1 : public Window {
 
 
 
-        cam = Vec3::SmoothDamp(cam, Quaternion::FromEulerAngles(pitch, 0, yaw) * Vec3{0, 0, -distance} + center, vel, 0.2f, 40, deltaTime);
+        cam = Vec3::SmoothDamp(cam, Quaternion::FromEulerAngles(pitch, 0, yaw) * Vec3{0, 0, -distance} + center, vel, 0.5f, 40, deltaTime);
         lightPos = Quaternion::FromEulerAngles(pitch2, 0, yaw2) * Vec3{0, 0, -distance2} + center;
 
 
     }
 
     void Draw() override {
-
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -137,7 +134,7 @@ class Win1 : public Window {
         sh.Begin();
 
 
-        Mat4 model = Mat4::Identify * Mat4::CreateScale({1, 1, 1});
+        Mat4 model = Mat4::Identify;
         Mat4 proj = Mat4::Perspective(50 * Math::DEG2RAD, width / height, 0.1, 100);
         Mat4 view = Mat4::LookAt(cam, center, {0, 1, 0});
 

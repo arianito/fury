@@ -12,7 +12,7 @@ Mat4 Mat4::Invert() const {
     return Mat4::Invert(*this);
 }
 
-const F32 Mat4::Determinant(const Mat4 &a) {
+F32 Mat4::Determinant(const Mat4 &a) {
     return a[0] * a[5] * a[10] * a[15] -
            a[0] * a[5] * a[11] * a[14] -
            a[0] * a[6] * a[9] * a[15] +
@@ -39,7 +39,7 @@ const F32 Mat4::Determinant(const Mat4 &a) {
            a[3] * a[6] * a[9] * a[12];
 }
 
-const Mat4 Mat4::Invert(const Mat4 &a) {
+Mat4 Mat4::Invert(const Mat4 &a) {
     auto det = Mat4::Determinant(a);
     if (det == 0) return Mat4::Identify;
     return {
@@ -109,7 +109,7 @@ const Mat4 Mat4::Invert(const Mat4 &a) {
     };
 }
 
-const Mat4 Mat4::CreateTranslation(const Uniform<3, 1> &a) {
+Mat4 Mat4::CreateTranslation(const Uniform<3, 1> &a) {
     return {
             1.0f, 0.0f, 0.0f, a[0],
             0.0f, 1.0f, 0.0f, a[1],
@@ -118,7 +118,7 @@ const Mat4 Mat4::CreateTranslation(const Uniform<3, 1> &a) {
     };
 }
 
-const Mat4 Mat4::FromQuaternion(const Uniform<4, 1> &a) {
+Mat4 Mat4::FromQuaternion(const Uniform<4, 1> &a) {
     F32 fTx = a[0] + a[0];
     F32 fTy = a[1] + a[1];
     F32 fTz = a[2] + a[2];
@@ -140,7 +140,7 @@ const Mat4 Mat4::FromQuaternion(const Uniform<4, 1> &a) {
     };
 }
 
-const Mat4 Mat4::CreateScale(const Uniform<3, 1> &a) {
+Mat4 Mat4::CreateScale(const Uniform<3, 1> &a) {
     return {
             a[0], 0.0f, 0.0f, 0.0f,
             0.0f, a[1], 0.0f, 0.0f,
@@ -149,7 +149,7 @@ const Mat4 Mat4::CreateScale(const Uniform<3, 1> &a) {
     };
 }
 
-const Mat4 Mat4::Perspective(const F32 &fov, const F32 &aspect, const F32 &near, const F32 &far) {
+Mat4 Mat4::Perspective(const F32 &fov, const F32 &aspect, const F32 &near, const F32 &far) {
     F32 yScale = 1.0f / Math::Tan(fov / 2.0f);
     F32 xScale = yScale / aspect;
     F32 nmf = near - far;
@@ -161,7 +161,7 @@ const Mat4 Mat4::Perspective(const F32 &fov, const F32 &aspect, const F32 &near,
     };
 }
 
-const Mat4 Mat4::Orthographic(const F32 &top, const F32 &right, const F32 &bottom, const F32 &left, const F32 &near, const F32 &far, const F32 &zoom) {
+Mat4 Mat4::Orthographic(const F32 &top, const F32 &right, const F32 &bottom, const F32 &left, const F32 &near, const F32 &far, const F32 &zoom) {
     return {
             2.0f / (right - left), 0, 0, (right + left) / (left - right),
             0, 2.0f / (top - bottom), 0, (top + bottom) / (bottom - top),
@@ -170,7 +170,7 @@ const Mat4 Mat4::Orthographic(const F32 &top, const F32 &right, const F32 &botto
     };
 }
 
-const Mat4 Mat4::LookAt(const Vec3 &eye, const Vec3 &center, const Vec3 &up) {
+Mat4 Mat4::LookAt(const Vec3 &eye, const Vec3 &center, const Vec3 &up) {
     Vec3 zaxis = (eye - center).Normal();
     Vec3 xaxis = Vec3::Cross(up, zaxis).Normal();
     Vec3 yaxis = Vec3::Cross(zaxis, xaxis);

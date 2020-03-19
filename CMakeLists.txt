@@ -22,18 +22,10 @@ file(GLOB_RECURSE CORE_FILES
 include_directories(core)
 
 
-function(PFolder path)
-    set(name bin_${path})
-    file(GLOB_RECURSE P1_FILES
-            src/${path}/*.cpp
-            src/${path}/*.h
-            )
-    add_executable(${name} ${CORE_FILES} ${P1_FILES})
-    target_link_libraries(${name} glad glfw)
-endfunction(PFolder)
-
-
-# PFolder(z01_rect)
-# PFolder(z02_point)
-# PFolder(z03_viewport)
-PFolder(z04_ok)
+set(name app)
+file(GLOB_RECURSE P1_FILES
+    src/*.cpp
+    src/*.h
+)
+add_executable(app ${CORE_FILES} ${P1_FILES})
+target_link_libraries(app glad glfw)

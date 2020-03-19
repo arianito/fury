@@ -21,67 +21,50 @@ struct Shader {
 
     Boolean Create(const String &path){
 
-        auto vid = glCreateShader(GL_VERTEX_SHADER);
-        auto fid = glCreateShader(GL_FRAGMENT_SHADER);
-
         auto vscode = File::ReadFile(Format(path, ".vertex.glsl"));
         auto fscode = File::ReadFile(Format(path, ".fragment.glsl"));
 
-        GLint result = 0;
-        GLint ilog = 0;
+        GLint status = GL_TRUE;
+        char error_msg[1024];
+        GLsizei read;
 
         char const *vspointer = vscode.c_str();
-        glShaderSource(vid, 1, &vspointer, NULL);
-        glCompileShader(vid);
-
-
-        glGetShaderiv(vid, GL_COMPILE_STATUS, &result);
-        glGetShaderiv(vid, GL_INFO_LOG_LENGTH, &ilog);
-
-        if (ilog > 0) {
-            std::vector<char> vserror(ilog + 1);
-            glGetShaderInfoLog(vid, ilog, NULL, &vserror[0]);
-            Error("Vertex Shader Error:", &vserror[0]);
+        auto vsp = glCreateShader(GL_VERTEX_SHADER);
+        glShaderSource(vsp, 1, &vspointer, nullptr);
+        glCompileShader(vsp);
+        glGetShaderiv(vsp, GL_COMPILE_STATUS, &status);
+        if (status != GL_TRUE) {
+            glGetShaderInfoLog( vsp, 1024, &read, error_msg);
+            Error("compile error:", error_msg);
             throw;
         }
 
 
         char const *fspointer = fscode.c_str();
-        glShaderSource(fid, 1, &fspointer, NULL);
-        glCompileShader(fid);
-
-
-        glGetShaderiv(fid, GL_COMPILE_STATUS, &result);
-        glGetShaderiv(fid, GL_INFO_LOG_LENGTH, &ilog);
-
-        if (ilog > 0) {
-            std::vector<char> fserror(ilog + 1);
-            glGetShaderInfoLog(fid, ilog, NULL, &fserror[0]);
-            Error("Fragment Shader Error:", &fserror[0]);
+        auto fsp = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(fsp, 1, &fspointer, nullptr);
+        glCompileShader(fsp);
+        glGetShaderiv( fsp, GL_COMPILE_STATUS, &status );
+        if (status != GL_TRUE) {
+            glGetShaderInfoLog( fsp, 1024, &read, error_msg);
+            Error("compile error:", error_msg);
             throw;
         }
-
         program = glCreateProgram();
-        glAttachShader(program, vid);
-        glAttachShader(program, fid);
+        glAttachShader(program, vsp);
+        glAttachShader(program, fsp);
         glLinkProgram(program);
-
-        glGetProgramiv(program, GL_LINK_STATUS, &result);
-        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &ilog);
-        if (ilog > 0) {
-            std::vector<char> perror(ilog + 1);
-            glGetProgramInfoLog(program, ilog, NULL, &perror[0]);
-            Error("Program Shader Error:", &perror[0]);
+        glGetProgramiv(program, GL_LINK_STATUS, &status);
+        if ( status != GL_TRUE )
+        {
+            glGetProgramInfoLog( program, 1024, &read, error_msg );
+            Error("compile error:", error_msg);
             throw;
         }
-
-
-        glDetachShader(program, vid);
-        glDetachShader(program, fid);
-
-        glDeleteShader(vid);
-        glDeleteShader(fid);
-
+        glDetachShader(program, vsp);
+        glDetachShader(program, fsp);
+        glDeleteShader(vsp);
+        glDeleteShader(fsp);
         return TRUE;
     }
 

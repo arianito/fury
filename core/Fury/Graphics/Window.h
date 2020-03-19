@@ -10,14 +10,6 @@
 #include "Fury/Primitives/System.h"
 #include "Fury/Graphics/Display.h"
 
-
-void local_resize_callback(GLFWwindow *, int w, int h) {
-    glViewport(0, 0, w * 2, h * 2);
-    Display::Width = (F32) w;
-    Display::Height = (F32) h;
-}
-
-
 struct Window {
 
     virtual void Dispose() {};
@@ -64,12 +56,6 @@ struct Window {
         }
 
 
-        GLint w, h;
-        glfwGetFramebufferSize(window, &w, &h);
-        glViewport(0, 0, w, h);
-        Display::Width = (F32) w;
-        Display::Height = (F32) h;
-        glfwSetWindowSizeCallback(window, local_resize_callback);
 
         this->Create();
 
@@ -80,9 +66,11 @@ struct Window {
 
         glfwSetTime(0);
         do {
-            glfwPollEvents();
-
-
+            GLint w, h;
+            glfwGetFramebufferSize(window, &w, &h);
+            glViewport(0, 0, w, h);
+            Display::Width = (F32) w;
+            Display::Height = (F32) h;
             rate = static_cast<F32>(glfwGetTime() - now);
             now = static_cast<F32>(glfwGetTime());
             Time::DeltaTime = rate;
@@ -95,13 +83,12 @@ struct Window {
                 this->FixedUpdate();
                 accumulator -= Time::FixedDeltaTime;
             }
-
-
             this->Update();
             this->Draw();
 
 
             glfwSwapBuffers(window);
+            glfwPollEvents();
         } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(window));
 
         this->Dispose();

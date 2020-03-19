@@ -19,14 +19,15 @@
 struct File {
 
     static String ReadFile(const String &path) {
-        String vscode;
         std::ifstream vstream(path, std::ios::in);
         if (vstream.is_open()) {
-            String line = "";
-            while (getline(vstream, line))
-                vscode += "\n" + line;
+            String vscode;
+            String line;
+            while (vstream.good()) {
+                getline(vstream, line);
+                vscode.append(line + "\n");
+            }
             vstream.close();
-
             return vscode;
         } else {
             Error(Format("Impossible to open ", path, ".vs"));
