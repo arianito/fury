@@ -23,9 +23,5 @@ include_directories(core/include)
 
 
 set(name app)
-file(GLOB_RECURSE P1_FILES
-    src/*.cpp
-    src/*.h
-)
-add_executable(app ${CORE_FILES} ${P1_FILES})
+add_executable(app ${CORE_FILES} src/main3.cpp)
 target_link_libraries(app glad glfw)

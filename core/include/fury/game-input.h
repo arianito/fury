@@ -1,7 +1,6 @@
-#ifndef FURY_INPUT_H
-#define FURY_INPUT_H
+#ifndef FURY_GAME_INPUT_H
+#define FURY_GAME_INPUT_H
 
-#include <GLFW/glfw3.h>
 #include "mathf.h"
 #include "timef.h"
 
@@ -149,85 +148,39 @@
 
 struct Input {
 public:
-    Input(GLFWwindow *window, Time *t) {
-        gwin = window;
-        time = t;
-    }
+    static Input *instance(GLFWwindow *window, Time *t);
+    static Input *instance();
 
-    bool keyDown(u16 key) {
-        if (key < 0)
-            return false;
-        lastKeyboardState[key] = keyboardState[key];
-        keyboardState[key] = glfwGetKey(gwin, key);
-        return keyboardState[key] && !lastKeyboardState[key];
-    }
+    Input(GLFWwindow *window, Time *t);
 
-    bool keyUp(u16 key) {
-        if (key < 0)
-            return false;
-        lastKeyboardState[key] = keyboardState[key];
-        keyboardState[key] = glfwGetKey(gwin, key);
-        return !keyboardState[key] && lastKeyboardState[key];
-    }
+    bool keyDown(u16 key);
+
+    bool keyUp(u16 key);
 
 
-    bool keyPress(u16 key) {
-        if (key < 0)
-            return false;
-        keyboardState[key] = glfwGetKey(gwin, key);
-        return keyboardState[key] != 0;
-    }
+    bool keyPress(u16 key);
 
 
-    bool mouseDown(u16 key) {
-        if (key < 0)
-            return false;
-        lastMouseState[key] = mouseState[key];
-        mouseState[key] = glfwGetMouseButton(gwin, key);
-        return mouseState[key] && !lastMouseState[key];
-    }
+    bool mouseDown(u16 key);
 
-    bool mouseUp(u16 key) {
-        if (key < 0)
-            return false;
-        lastMouseState[key] = mouseState[key];
-        mouseState[key] = glfwGetMouseButton(gwin, key);
-        return !mouseState[key] && lastMouseState[key];
-    }
+    bool mouseUp(u16 key);
 
 
-    bool mousePress(u16 key) {
-        if (key < 0)
-            return false;
-        mouseState[key] = glfwGetMouseButton(gwin, key);
-        return mouseState[key] != 0;
-    }
+    bool mousePress(u16 key);
 
-    [[nodiscard]] f32 x() const {
-        return xpos;
-    }
+    [[nodiscard]] f32 x() const;
 
-    [[nodiscard]] f32 y() const {
-        return ypos;
-    }
+    [[nodiscard]] f32 y() const;
 
-    [[nodiscard]] Vec2 position() const {
-        return {(f32) xpos, (f32) ypos};
-    }
+    [[nodiscard]] Vec2 position() const;
 
-    float getAxis(u8 a) {
-        return axises[a];
-    }
+    float getAxis(u8 a);
 
 
-    void update() {
-        moveAxis(AXIS_HORIZONTAL, keyPress(KEY_LEFT) || keyPress(KEY_A), keyPress(KEY_RIGHT) || keyPress(KEY_D));
-        moveAxis(AXIS_VERTICAL, keyPress(KEY_DOWN) || keyPress(KEY_S), keyPress(KEY_UP) || keyPress(KEY_W));
-
-        glfwGetCursorPos(gwin, &xpos, &ypos);
-    }
+    void update();
 
 private:
+    static Input *m_instance;
     u8 keyboardState[350]{};
     u8 lastKeyboardState[350]{};
 
@@ -242,14 +195,7 @@ private:
     Time *time;
     double xpos{}, ypos{};
 
-    void moveAxis(u16 ax, bool low, bool high) {
-        float delta = time->deltaTime;
-        float to = 0.0f + (low ? -1.0f : 0.0f) + (high ? 1.0f : 0.0f);
-        if (fabsf(axises[ax] - to) > Math::KEPSILON) {
-            axises[ax] = Math::smoothDamp(axises[ax], to, axisesVelocity[ax], 0.2f, 40, delta);
-        }
-
-    }
+    void moveAxis(u16 ax, bool low, bool high);
 };
 
 #endif

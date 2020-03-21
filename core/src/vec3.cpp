@@ -71,7 +71,7 @@ Vec3 Vec3::normal() const {
     auto b = this->magnitude();
     if (b > Math::KEPSILON)
         return *this / b;
-    return Vec3{0};
+    return zero;
 }
 
 Vec3 Vec3::cross(const Vec3 &a) const {
@@ -185,7 +185,7 @@ const f32 Vec3::angle(const Vec3 &from, const Vec3 &to) {
     if (denominator < Math::KEPSILON_NORMAL)
         return 0.0f;
     float d = Math::clamp(dot(from, to) / denominator, -1.0F, 1.0F);
-    return Math::arcCos(d) * Math::RAD2DEG;
+    return Math::arcCos(d);
 }
 
 const f32 Vec3::signedAngle(const Vec3 &from, const Vec3 &to, const Vec3 &axis) {

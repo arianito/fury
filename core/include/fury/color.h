@@ -40,6 +40,14 @@ struct Color : Uniform<4, 1> {
     Vec3 &rgb();
 
     Vec3 rgb() const;
+
+
+    static const Color red;
+    static const Color green;
+    static const Color blue;
+    static const Color white;
+    static const Color black;
+    static const Color yellow;
 };
 
 #endif //GAME_COLOR_H

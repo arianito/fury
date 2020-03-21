@@ -11,7 +11,7 @@
 #include "path.h"
 #include "mathf.h"
 #include "file.h"
-#include "input.h"
+#include "game-input.h"
 
 #include "system.h"
 #include "uniform.h"
@@ -31,5 +31,9 @@
 #include "triangle.h"
 #include "box.h"
 #include "debug_draw.h"
+#include "entity.h"
+#include "camera2d.h"
+#include "ray.h"
+#include "plane.h"
 
 #endif //ORBITAL_GL_CORE_H

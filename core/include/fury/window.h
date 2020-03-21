@@ -9,12 +9,15 @@
 #include "timef.h"
 #include "system.h"
 #include "display.h"
-#include "input.h"
+#include "game-input.h"
 #include "mathf.h"
+#include "entity.h"
 
 struct Window {
 
     virtual void dispose() {};
+
+    virtual void init() {};
 
     virtual void create() {};
 
@@ -26,11 +29,16 @@ struct Window {
 
     i32 run();
 
+    void add(Entity *entity);
+
+    void remove(Entity *entity);
+
 public:
     GLFWwindow *window = nullptr;
-    Input *input;
-    Time *time;
-    Display *display;
+    Input *input = nullptr;
+    Time *time = nullptr;
+    Display *display = nullptr;
+    List<Entity*> entities;
 };
 
 #endif

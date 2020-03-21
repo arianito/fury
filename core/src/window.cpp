@@ -12,7 +12,6 @@ i32 Window::run() {
         return -1;
     }
 
-
     glfwWindowHint(GLFW_SAMPLES, 2);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -21,12 +20,20 @@ i32 Window::run() {
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+    this->init();
 
 
-    window = glfwCreateWindow(800, 600, "Aryan", NULL, NULL);
-    time = new Time();
-    display = new Display();
-    input = new Input(window, time);
+    window = glfwCreateWindow(800, 600, "Aryan", nullptr, nullptr);
+    time = Time::instance();
+    display = Display::instance();
+    input = Input::instance(window, time);
+    for (auto &entity : entities) {
+        entity->input = input;
+        entity->display = display;
+        entity->time = time;
+        entity->window = window;
+    }
+
     if (window == nullptr) {
         log_fatal("game: Failed to load OpenGL");
         throw;
@@ -40,17 +47,29 @@ i32 Window::run() {
         log_fatal("game: Failed to initialize OpenGL context");
         throw;
     }
-
-
+    for (auto &entity : entities) {
+        if (entity->isActive()){
+            entity->create();
+        }
+    }
     this->create();
+    for (auto &entity : entities) {
+        if (entity->isActive()){
+            entity->awake();
+        }
+    }
 
-    int frames{0};
     f32 now{0}, rate{0};
     f32 accumulator{0};
     f32 vel{0};
 
     glfwSetTime(0);
     do {
+        for (auto &entity : entities) {
+            entity->validate();
+            if(entity->isActive())
+                entity->lateUpdate();
+        }
         input->update();
         GLint w, h;
         glfwGetFramebufferSize(window, &w, &h);
@@ -66,18 +85,30 @@ i32 Window::run() {
             rate = 0.25f;
         accumulator += rate;
         while (accumulator >= time->fixedDeltaTime) {
+            for (auto &entity : entities) {
+                if (entity->isActive())
+                    entity->fixedUpdate();
+            }
             this->fixedUpdate();
             accumulator -= time->fixedDeltaTime;
         }
+        for (auto &entity : entities) {
+            if (entity->isActive())
+                entity->update();
+        }
         this->update();
 
-        glClearColor(0.04, 0.2, 0.3, 1);
+        glClearColor(0.1, 0.2, 0.3, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        for (auto &entity : entities) {
+            if (entity->isActive())
+                entity->render();
+        }
         this->render();
 
 
@@ -85,7 +116,19 @@ i32 Window::run() {
         glfwPollEvents();
     } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(window));
 
+    for (auto &entity : entities) {
+        entity->dispose();
+    }
     this->dispose();
     glfwTerminate();
     return 0;
+}
+
+void Window::add(Entity *entity) {
+    entities.emplace_back(entity);
+}
+
+
+void Window::remove(Entity *entity) {
+    entities.remove(entity);
 }

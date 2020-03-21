@@ -101,7 +101,8 @@ void GLRenderPoints::render() {
     sh.setParam("view", view);
 
     glBindVertexArray(m_vaoId);
-
+    glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    glEnable(GL_POINT_SPRITE);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec2), m_vertices);
 
@@ -117,8 +118,6 @@ void GLRenderPoints::render() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    sh.end();
 
     m_count = 0;
 }
@@ -218,7 +217,7 @@ void GLRenderLines::render() {
     sh.setParam("projection", projection);
     sh.setParam("view", view);
 
-    glLineWidth(2);
+    glLineWidth(1);
     glBindVertexArray(m_vaoId);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
@@ -232,8 +231,6 @@ void GLRenderLines::render() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    sh.end();
 
     m_count = 0;
 }
@@ -340,15 +337,10 @@ void GLRenderTriangles::render() {
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Color), m_colors);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDrawArrays(GL_TRIANGLES, 0, m_count);
-    glDisable(GL_BLEND);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-
-    sh.end();
 
     m_count = 0;
 }
@@ -358,7 +350,7 @@ void GLRenderTriangles::update(const Mat4 &v, const Mat4 &p) {
     projection = p;
 }
 
-void DebugDraw::create() {
+void DebugDraw::awake() {
     m_points = new GLRenderPoints();
     m_points->create();
     m_lines = new GLRenderLines();
@@ -370,15 +362,15 @@ void DebugDraw::create() {
 void DebugDraw::dispose() {
     m_points->dispose();
     delete m_points;
-    m_points = NULL;
+    m_points = nullptr;
 
     m_lines->dispose();
     delete m_lines;
-    m_lines = NULL;
+    m_lines = nullptr;
 
     m_triangles->dispose();
     delete m_triangles;
-    m_triangles = NULL;
+    m_triangles = nullptr;
 }
 
 void DebugDraw::render() {
@@ -387,18 +379,18 @@ void DebugDraw::render() {
     m_points->render();
 }
 
-void DebugDraw::update(const Mat4 &v, const Mat4 &p) {
+void DebugDraw::setCamera(const Mat4 &v, const Mat4 &p) {
     m_triangles->update(v, p);
     m_lines->update(v, p);
     m_points->update(v, p);
 }
 
-void DebugDraw::drawSegment(const Vec2 &p1, const Vec2 &p2, const Color &color) {
+void DebugDraw::segment(const Vec2 &p1, const Vec2 &p2, const Color &color) {
     m_lines->vertex(p1, color);
     m_lines->vertex(p2, color);
 }
 
-void DebugDraw::drawPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color) {
+void DebugDraw::polygon(const Vec2 *vertices, u32 vertexCount, const Color &color) {
     Vec2 p1 = vertices[vertexCount - 1];
     for (u32 i = 0; i < vertexCount; ++i) {
         Vec2 p2 = vertices[i];
@@ -408,26 +400,17 @@ void DebugDraw::drawPolygon(const Vec2 *vertices, u32 vertexCount, const Color &
     }
 }
 
-void DebugDraw::drawSolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color) {
-    Color fillColor(0.5f * color.r(), 0.5f * color.g(), 0.5f * color.b(), 0.5f);
+void DebugDraw::solidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color) {
 
     for (u32 i = 1; i < vertexCount - 1; ++i) {
-        m_triangles->vertex(vertices[0], fillColor);
-        m_triangles->vertex(vertices[i], fillColor);
-        m_triangles->vertex(vertices[i + 1], fillColor);
-    }
-
-    Vec2 p1 = vertices[vertexCount - 1];
-    for (u32 i = 0; i < vertexCount; ++i) {
-        Vec2 p2 = vertices[i];
-        m_lines->vertex(p1, color);
-        m_lines->vertex(p2, color);
-        p1 = p2;
+        m_triangles->vertex(vertices[0], color);
+        m_triangles->vertex(vertices[i], color);
+        m_triangles->vertex(vertices[i + 1], color);
     }
 }
 
-void DebugDraw::drawCircle(const Vec2 &center, float radius, const Color &color) {
-    const float k_segments = 16.0f;
+void DebugDraw::circle(const Vec2 &center, float radius, const Color &color) {
+    const float k_segments = 8.0f;
     const float k_increment = 2.0f * Math::PI / k_segments;
     float sinInc = sinf(k_increment);
     float cosInc = cosf(k_increment);
@@ -445,48 +428,40 @@ void DebugDraw::drawCircle(const Vec2 &center, float radius, const Color &color)
     }
 }
 
-void DebugDraw::drawSolidCircle(const Vec2 &center, float radius, const Vec2 &axis, const Color &color) {
-    const float k_segments = 16.0f;
+void DebugDraw::solidCircle(const Vec2 &center, float radius, const Color &color) {
+    const float k_segments = 8.0f;
     const float k_increment = 2.0f * Math::PI / k_segments;
     float sinInc = sinf(k_increment);
     float cosInc = cosf(k_increment);
-    Vec2 v0 = center;
+    const auto &v0 = center;
     Vec2 r1(cosInc, sinInc);
     Vec2 v1 = center + radius * r1;
-    Color fillColor(0.5f * color.r(), 0.5f * color.g(), 0.5f * color.b(), 0.5f);
 
-    for (u32 i = 0; i < k_segments; ++i) {
-        // Perform rotation to avoid additional trigonometry.
-        Vec2 r2;
-        r2.x() = cosInc * r1.x() - sinInc * r1.y();
-        r2.y() = sinInc * r1.x() + cosInc * r1.y();
-        Vec2 v2 = center + radius * r2;
-        m_triangles->vertex(v0, fillColor);
-        m_triangles->vertex(v1, fillColor);
-        m_triangles->vertex(v2, fillColor);
-        r1 = r2;
-        v1 = v2;
-    }
-
-    r1.set(1.0f, 0.0f);
-    v1 = center + radius * r1;
     for (u32 i = 0; i < k_segments; ++i) {
         Vec2 r2;
         r2.x() = cosInc * r1.x() - sinInc * r1.y();
         r2.y() = sinInc * r1.x() + cosInc * r1.y();
         Vec2 v2 = center + radius * r2;
-        m_lines->vertex(v1, color);
-        m_lines->vertex(v2, color);
+        m_triangles->vertex(v0, color);
+        m_triangles->vertex(v1, color);
+        m_triangles->vertex(v2, color);
         r1 = r2;
         v1 = v2;
     }
 
-    // Draw a line fixed in the circle to animate rotation.
-    Vec2 p = center + radius * axis;
-    m_lines->vertex(center, color);
-    m_lines->vertex(p, color);
 }
 
-void DebugDraw::drawPoint(const Vec2 &p, float size, const Color &color) {
+void DebugDraw::point(const Vec2 &p, float size, const Color &color) {
     m_points->vertex(p, color, size);
+}
+
+void DebugDraw::pivot(const Vec2 &p) {
+    auto red = Color(1, 0, 0, 0.5);
+    auto green = Color(0, 1, 0, 0.5);
+
+    m_lines->vertex(p, green);
+    m_lines->vertex(p + Vec2::up * 0.2, green);
+
+    m_lines->vertex(p, red);
+    m_lines->vertex(p + Vec2::right * 0.2, red);
 }

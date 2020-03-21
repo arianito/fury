@@ -8,6 +8,7 @@
 #include "vec2.h"
 #include "color.h"
 #include "shader.h"
+#include "entity.h"
 
 #define BUFFER_OFFSET(x)  ((const void*) (x))
 
@@ -70,7 +71,6 @@ private:
     GLuint m_vaoId;
     GLuint m_vboIds[2];
     GLuint m_programId;
-    GLint m_projectionUniform;
     GLint m_vertexAttribute;
     GLint m_colorAttribute;
 };
@@ -102,32 +102,29 @@ private:
     GLuint m_vaoId;
     GLuint m_vboIds[2];
     GLuint m_programId;
-    GLint m_projectionUniform;
     GLint m_vertexAttribute;
     GLint m_colorAttribute;
 };
 
-struct DebugDraw {
+struct DebugDraw: public Entity {
 public:
-    void create();
+    void awake();
+    void render() override;
+    void dispose() override;
+    void setCamera(const Mat4 &v, const Mat4 &p);
 
-    void dispose();
+    void segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
 
-    void update(const Mat4 &v, const Mat4 &p);
+    void polygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
 
-    void drawSegment(const Vec2 &p1, const Vec2 &p2, const Color &color);
+    void solidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
 
-    void drawPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    void circle(const Vec2 &center, float radius, const Color &color);
+    void solidCircle(const Vec2 &center, float radius, const Color &color);
 
-    void drawSolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    void point(const Vec2 &p, float size, const Color &color);
+    void pivot(const Vec2 &p);
 
-    void drawCircle(const Vec2 &center, float radius, const Color &color);
-
-    void drawSolidCircle(const Vec2 &center, float radius, const Vec2 &axis, const Color &color);
-
-    void drawPoint(const Vec2 &p, float size, const Color &color);
-
-    void render();
 
 private:
     GLRenderPoints *m_points;

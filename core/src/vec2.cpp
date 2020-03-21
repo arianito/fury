@@ -41,7 +41,7 @@ f32 Vec2::sqrMagnitude() const {
 
 Vec2 Vec2::normal() const {
     auto b = magnitude();
-    if(b < Math::KEPSILON)
+    if (b > Math::KEPSILON)
         return *this / b;
     return zero;
 }
@@ -60,7 +60,7 @@ f32 Vec2::sqrMagnitude(const Vec2 &a) {
 
 Vec2 Vec2::normalize(const Vec2 &a) {
     auto b = a.magnitude();
-    if(b < Math::KEPSILON)
+    if (b < Math::KEPSILON)
         return a / b;
     return zero;
 }
@@ -96,4 +96,24 @@ Vec2 operator+(const Vec2 &a, const Vec2 &b) {
 void Vec2::set(f32 x, f32 y) {
     data[0] = x;
     data[1] = y;
+}
+
+Vec2 Vec2::perpendicularClockwise() const {
+    return Vec2(data[1], -data[0]);
+}
+
+Vec2 Vec2::perpendicularCounterClockwise() const {
+    return Vec2(-data[1], data[0]);
+}
+
+f32 Vec2::angle(const Vec2 &from, const Vec2 &to) {
+    float denominator = Math::sqrt(from.sqrMagnitude() * to.sqrMagnitude());
+    if (denominator < Math::KEPSILON_NORMAL)
+        return 0.0f;
+    float d = Math::clamp(dot(from, to) / denominator, -1.0F, 1.0F);
+    return Math::arcCos(d);
+}
+
+f32 Vec2::distance(const Vec2 &a, const Vec2 &b) {
+    return (a - b).magnitude();
 }

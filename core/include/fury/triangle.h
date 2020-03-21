@@ -37,7 +37,6 @@ struct Triangle {
 
     void render() {
         glBindVertexArray(vao);
-        glLineWidth(3);
         glDrawElements(GL_LINES, 3, GL_UNSIGNED_INT, nullptr);
     }
 

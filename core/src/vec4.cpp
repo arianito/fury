@@ -97,7 +97,10 @@ f32 Vec4::sqrMagnitude() const {
 }
 
 Vec4 Vec4::normal() const {
-    return *this / magnitude();
+    auto b = this->magnitude();
+    if (b > Math::KEPSILON)
+        return *this / b;
+    return zero;
 }
 
 
