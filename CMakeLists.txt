@@ -19,7 +19,7 @@ file(GLOB_RECURSE CORE_FILES
     core/*.cpp
     core/*.h
 )
-include_directories(core)
+include_directories(core/include)
 
 
 set(name app)

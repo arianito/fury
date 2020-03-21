@@ -1,173 +1,119 @@
 
-#include <Fury/Core.h>
+#include <fury/core.h>
 
-static F32 pitch = 0;
-static F32 yaw = 0;
-
-static F32 pitch2 = 1;
-static F32 yaw2 = 0.6;
-
-static F32 distance = 6;
-static F32 distance2 = 10;
-
-static Shader sh;
-
-static GLuint vao, vbo, ebo;
-
-
-Vec3 cam{0, 0, 0}, lightPos{0, 0, 0}, center{0, 0, 0};
-Vec3 vel = 0;
-
-F32 fps = 0;
-F32 lt = 0;
+struct Bone {
+    f32 angle;
+    f32 len;
+};
 
 class Win1 : public Window {
+    Mat4 view{0};
+    Mat4 proj{0};
+    DebugDraw draw;
+    f32 camZoom = 0.5;
+    f32 lastZoom = 0;
+    Vec2 camPosition{0, 0};
+    Vec2 lastMouse{0};
+    Vec2 lastPos{0};
 
-    void Create() override {
-
-        Input::Init(this->window);
-
-        sh.Create(Path::local("../src/shader"));
-
-
-        GLfloat vertices[] = {
-                // front
-                -1.0f, -1.0f, 1.0f, 0, 0, 1,
-                1.0f, -1.0f, 1.0f, 0, 0, 1,
-                1.0f, 1.0f, 1.0f, 0, 0, 1,
-                -1.0f, 1.0f, 1.0f, 0, 0, 1,
-
-                //right
-                1.0f, 1.0f, 1.0f, 1, 0, 0,
-                1.0f, 1.0f, -1.0f, 1, 0, 0,
-                1.0f, -1.0f, -1.0f, 1, 0, 0,
-                1.0f, -1.0f, 1.0f, 1, 0, 0,
-
-                //back
-                -1.0f, -1.0f, -1.0f, 0, 0, -1,
-                1.0f, -1.0f, -1.0f, 0, 0, -1,
-                1.0f, 1.0f, -1.0f, 0, 0, -1,
-                -1.0f, 1.0f, -1.0f, 0, 0, -1,
-
-                //left
-                -1.0f, -1.0f, -1.0f, -1, 0, 0,
-                -1.0f, -1.0f, 1.0f, -1, 0, 0,
-                -1.0f, 1.0f, 1.0f, -1, 0, 0,
-                -1.0f, 1.0f, -1.0f, -1, 0, 0,
-
-                //upper
-                1.0f, 1.0f, 1.0f, 0, 1, 0,
-                -1.0f, 1.0f, 1.0f, 0, 1, 0,
-                -1.0f, 1.0f, -1.0f, 0, 1, 0,
-                1.0f, 1.0f, -1.0f, 0, 1, 0,
-
-                //bottom
-                -1.0f, -1.0f, -1.0f, 0, -1, 0,
-                1.0f, -1.0f, -1.0f, 0, -1, 0,
-                1.0f, -1.0f, 1.0f, 0, -1, 0,
-                -1.0f, -1.0f, 1.0f, 0, -1, 0,
-        };
-        GLuint indices[] = {
-                0, 1, 2, 0, 2, 3, //front
-                4, 5, 6, 4, 6, 7, //right
-                8, 9, 10, 8, 10, 11, //back
-                12, 13, 14, 12, 14, 15, //left
-                16, 17, 18, 16, 18, 19, //upper
-                20, 21, 22, 20, 22, 23, //bottom
-        };
-
-
-        glGenVertexArrays(1, &vao);
-        glGenBuffers(1, &vbo);
-        glGenBuffers(1, &ebo);
-
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) 0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *) (3 * sizeof(GLfloat)));
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
-
-
-        glEnable(GL_DEPTH_TEST);
-        glDepthFunc(GL_LESS);
-
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    void create() override {
+        draw.create();
 
     }
 
-    void FixedUpdate() override {
+    Vec2 convert(const Mat4 &m) {
+        auto matInverse = m.invert();
+        auto vIn = Vec4();
+        vIn[0] = 2.0 * (input->x() / display->width) - 1.0f;
+        vIn[1] = -2.0 * (input->y() / display->height) + 1.0f;
+        vIn[2] = 1.0;
+        vIn[3] = 1.0;
+        auto pos = vIn * matInverse;
+        pos[3] = 1.0 / pos[3];
+        pos[0] *= pos[3];
+        pos[1] *= pos[3];
+        pos[2] *= pos[3];
+        return {pos[0], pos[1]};
     }
 
-    void Update() override {
-
-        Input::Update();
-
-
-        F32 deltaTime = Time::DeltaTime;
-
-        pitch -= Input::GetAxis(Axis::Horizontal) * deltaTime;
-        yaw += Input::GetAxis(Axis::Vertical) * deltaTime;
-
-
-
-
-        cam = Vec3::SmoothDamp(cam, Quaternion::FromEulerAngles(pitch, 0, yaw) * Vec3{0, 0, -distance} + center, vel, 0.5f, 40, deltaTime);
-        lightPos = Quaternion::FromEulerAngles(pitch2, 0, yaw2) * Vec3{0, 0, -distance2} + center;
-
-
+    Vec2 convert() {
+        return convert(proj * Mat4::createScale(Vec3(camZoom)));
     }
 
-    void Draw() override {
+    void update() override {
+        if (input->keyPress(KEY_LEFT_SHIFT)) {
+            if (input->mouseDown(MOUSE_BUTTON_LEFT)) {
+                lastMouse = convert();
+                lastPos = camPosition;
+            }
+            if (input->mousePress(MOUSE_BUTTON_LEFT)) {
+                auto pos = convert();
+                camPosition = lastPos + (pos - lastMouse);
+            }
+            if (input->mouseDown(MOUSE_BUTTON_RIGHT)) {
+                lastMouse = input->position();
+                lastZoom = camZoom;
+            }
+            if (input->mousePress(MOUSE_BUTTON_RIGHT)) {
+                auto pos = input->position();
+                auto diff = (lastMouse.y() - pos.y()) / display->height * 2;
+                camZoom = Math::clamp(lastZoom * (1 + diff) * (1 + diff), 0.0001, 10);
+            }
+        }
+    }
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    void render() override {
+        f32 sz = 10;
+        f32 height = sz / display->ratio();
+        proj = Mat4::orthographic(height / 2, sz / 2, -height / 2, -sz / 2, -100, 100);
+        view = Mat4::createTranslation(Vec3{camPosition.x(), camPosition.y(), 0} * camZoom) *
+               Mat4::createScale(Vec3(camZoom));
 
-        F32 width = Display::Width;
-        F32 height = Display::Height;
+        auto pos = convert(proj * view);
 
-        sh.Begin();
+        f32 a = 0;
+        if (pos.x() < 0)
+            a = Math::arcTan(pos.y() / pos.x()) + Math::PI;
+        else
+            a = Math::arcTan(pos.y() / pos.x());
+
+        f32 r2 = pos.sqrMagnitude();
+        f32 a1 = 2;
+        f32 a2 = 2.3;
+
+        f32 q2 = Math::arcCos(Math::clamp((r2 - a1 * a1 - a2 * a2) / (2 * a1 * a2), -1, 1));
+        f32 q1 = a - Math::arcTan((a2 * Math::sin(q2)) / (a1 + a2 * Math::cos(q2)));
+
+        Bone bones[2];
+        bones[0] = Bone{q1, a1};
+        bones[1] = Bone{q2, a2};
+        Vec2 from = {0, 0};
+        f32 ang = 0;
+        for (auto b : bones) {
+            ang += b.angle;
+            Vec2 next = {
+                    from.x() + b.len * Math::cos(ang),
+                    from.y() + b.len * Math::sin(ang),
+            };
+            draw.drawSegment(from, next, Color(1, 0, 0));
+            draw.drawSolidCircle(from, 0.1, Vec2::up, Color(1, 0, 0));
+            from = next;
+        }
+        draw.drawSolidCircle(from, 0.1, Vec2::up, Color(1, 0, 0));
 
 
-        Mat4 model = Mat4::Identify;
-        Mat4 proj = Mat4::Perspective(50 * Math::DEG2RAD, width / height, 0.1, 100);
-        Mat4 view = Mat4::LookAt(cam, center, {0, 1, 0});
-
-
-        sh.SetParam("world", model);
-        sh.SetParam("view", view);
-        sh.SetParam("projection", proj);
-        sh.SetParam("cameraPosition", cam);
-        sh.SetParam("lightPosition", lightPos);
-
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
-
-        sh.End();
-
-
+        draw.update(view, proj);
+        draw.render();
     }
 
 
-    void Dispose() override {
-        sh.Dispose();
-
-        glDeleteVertexArrays(1, &vao);
-        glDeleteBuffers(1, &vbo);
-        glDeleteBuffers(1, &ebo);
+    void dispose() override {
+        draw.dispose();
     };
-
 };
 
 
 int main() {
-
-    auto w = Win1();
-    return w.Run();
+    Win1 w;
+    return w.run();
 }

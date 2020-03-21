@@ -265,7 +265,7 @@ request, please file it in the
 [issue tracker](https://github.com/glfw/glfw/issues) on GitHub.
 
 Finally, if you're interested in helping out with the development of GLFW or
-porting it to your favorite platform, join us on the forum, GitHub or IRC.
+porting it to your favorite platform, join_string us on the forum, GitHub or IRC.
 
 
 ## Acknowledgements
