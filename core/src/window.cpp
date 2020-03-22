@@ -74,8 +74,13 @@ i32 Window::run() {
         GLint w, h;
         glfwGetFramebufferSize(window, &w, &h);
         glViewport(0, 0, w, h);
+#if __APPLE__
+        display->width = (f32) w/2;
+        display->height = (f32) h/2;
+#else
         display->width = (f32) w;
         display->height = (f32) h;
+#endif
         rate = static_cast<f32>(glfwGetTime() - now);
         now = static_cast<f32>(glfwGetTime());
         time->deltaTime = rate;
