@@ -108,7 +108,7 @@ private:
 
 struct DebugDraw: public Entity {
 public:
-    void awake();
+    void awake() override;
     void render() override;
     void dispose() override;
     void setCamera(const Mat4 &v, const Mat4 &p);

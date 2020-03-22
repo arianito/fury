@@ -35,6 +35,13 @@ f32 Math::tan(const f32 & of) {
     return tanf(of);
 }
 
+
+f32 Math::ramp(const f32 & of) {
+    if(of < 0)
+        return 0;
+    return of;
+}
+
 f32 Math::arcCos(const f32 & of) {
     return acosf(of);
 }

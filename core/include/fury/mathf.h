@@ -35,6 +35,8 @@ struct Math {
 
     static f32 tan(const f32 &of);
 
+    static f32 ramp(const f32 &of);
+
     static f32 arcCos(const f32 &of);
 
     static f32 exp(const f32 &of);
