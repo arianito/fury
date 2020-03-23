@@ -59,5 +59,10 @@ Vec2 Camera2d::convert(const Mat4 &m, const Vec2 &p) {
     pos[0] *= pos[3];
     pos[1] *= pos[3];
     pos[2] *= pos[3];
+
+    if(isnan(pos[0]))
+        pos[0] = 0;
+    if(isnan(pos[1]))
+        pos[1] = 0;
     return {pos[0], pos[1]};
 }

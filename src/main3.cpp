@@ -56,10 +56,10 @@ struct Skeleton {
                 auto j0 = joints.at(i - 1);
                 auto j1 = joints.at(i);
                 auto j2 = joints.at(i + 1);
-                auto angle = Vec3::signedAngle(j1->position - j0->position, j2->position - j0->position, Vec3::forward);
-                ang += angle;
-                j2->position = Vec3::lerp(j2->position, j1->position + Vec3(Math::cos(ang), Math::sin(ang), 0) * len, snapBackStrength);
+                auto angle = Vec3::signedAngle(j1->position - j0->position, j2->position - j1->position, Vec3::forward);
                 
+                j2->position = Vec3::lerp(j2->position, j1->position + Vec3(Math::cos(ang), Math::sin(ang), 0) * len, snapBackStrength);
+                ang += angle;
             }
         }
 
@@ -90,7 +90,7 @@ struct Skeleton {
             auto h = (j2->position - j0->position) / 2.0f;
             auto plane = Plane(h, j0->position);
 
-            auto p =  h + Vec3(-h.y(), h.x(), 0).normal() * 10;
+            auto p =  h + Vec3(-h.y(), h.x(), 0) * 4.0f;
 
             auto projectedPole = plane.closestPointOnPlane(p);
             auto projectedBone = plane.closestPointOnPlane(j1->position);
@@ -115,9 +115,7 @@ struct Body1 : public Entity {
     DebugDraw *draw;
 
     void create() override {
-        sk.add(new Joint{Vec3{-1.5, 0}, new Effector{Vec3{0, 0}}});
-        sk.add(new Joint{Vec3{-1, 0}});
-        sk.add(new Joint{Vec3{-0.2, 0}});
+        sk.add(new Joint{Vec3{0, 0}, new Effector{Vec3{0, 0}}});
         sk.add(new Joint{Vec3{0.5, 0}});
         sk.add(new Joint{Vec3{1, 0}, new Effector{Vec3{1, 0}}});
         sk.init();
@@ -127,7 +125,7 @@ struct Body1 : public Entity {
     }
 
     void setLeg(const Vec3& pos) {
-        sk.joints.at(4)->effector->position = pos;
+        sk.joints.at(sk.size() - 1)->effector->position = pos;
     }
 
 
@@ -178,7 +176,6 @@ class Win1 : public Window {
     DebugDraw draw;
     Body1 body1{&draw};
     Body1 body2{&draw};
-    Body1 body3{&draw};
     Camera2d *camera;
 
     void init() override {
@@ -187,27 +184,23 @@ class Win1 : public Window {
         add(&draw);
         add(&body1);
         add(&body2);
-        add(&body3);
     }
 
     f32 a = 0;
     Vec3 lega{0, -1};
     Vec3 legb{0, -1};
     Vec3 legc{0, -1};
+    Vec3 legd{0, -1};
+    Vec3 hip{0, 0};
     void update() override {
         auto targetPosition = camera->screenToWorld(input->position());
         draw.setCamera(camera->view, camera->projection);
-        if(input->mousePress(MOUSE_BUTTON_LEFT)) {
-            body1.setHip(Vec3(targetPosition, 0));
-            body2.setHip(Vec3(targetPosition, 0));
-            body3.setHip(Vec3(targetPosition, 0));
-        }
 
         auto p = -input->getAxis(1);
         if(Math::abs(p) < 0.1f) {
-            lega = Vec3::lerp(lega, Vec3(0, -1), 0.1f);
-            legb = Vec3::lerp(legb, Vec3(0, -1), 0.1f);
-            legc = Vec3::lerp(legc, Vec3(0, -1), 0.1f);
+            lega = Vec3::lerp(lega, Vec3(-0.1f, -1), 0.1f);
+            legb = Vec3::lerp(legb, Vec3(0.2f, -1), 0.1f);
+            hip = Vec3::lerp(hip, Vec3(targetPosition), 0.1f);
         } else{
             a += time->deltaTime * 4 * p;
             if (a < -2*Math::PI) {
@@ -217,46 +210,38 @@ class Win1 : public Window {
             }
 
 
-            auto t0 = a + 0.33f * 2 * Math::PI;
+            auto t0 = a + 0.5f * 2 * Math::PI;
             auto theta1 = t0 + Math::ramp(-Math::cos(t0)) * Math::sin(t0);
-            auto t1 = a + 0.66f * 2 * Math::PI;
+            auto t1 = a + 1.0f * 2 * Math::PI;
             auto theta2 = t1 + Math::ramp(-Math::cos(t1)) * Math::sin(t1);
-            auto t2 = a + 0.99f * 2 * Math::PI;
-            auto theta3 = t2 + Math::ramp(-Math::cos(t2)) * Math::sin(t2);
+
+
+            auto t2 = a;
+            auto theta3 = t2 * 2.0f;
 
             auto ws = 0.5f;
+            auto hs = 0.3f;
 
-            lega = Vec3{Math::cos(theta1) * ws, Math::sin(theta1) * 0.3f, 0};
+
+            lega = Vec3{Math::cos(theta1) * ws, Math::sin(theta1) * hs, 0};
             if(lega[1] < 0)
                 lega[1] = 0;
             lega[1] -= 1;
 
-            legb = Vec3{Math::cos(theta2) * ws, Math::sin(theta2) * 0.3f, 0};
+            legb = Vec3{Math::cos(theta2) * ws, Math::sin(theta2) * hs, 0};
             if(legb[1] < 0)
                 legb[1] = 0;
             legb[1] -= 1;
 
+            hip = Vec3{Math::cos(theta3)*0.05f, Math::sin(theta3)*0.1f} + Vec3(targetPosition);
 
-            legc = Vec3{Math::cos(theta3) * ws, Math::sin(theta3) * 0.3f, 0};
-            if(legc[1] < 0)
-                legc[1] = 0;
-            legc[1] -= 1;
         }
 
         body1.setLeg(lega);
         body2.setLeg(legb);
-        body3.setLeg(legc);
 
-        // if (input->keyDown(KEY_Q)) {
-        //     body1.setPole(eff2);
-        // }
-        // if (input->keyDown(KEY_E)) {
-        //     body1.setPole(nullptr);
-        // }
-
-        // if (input->mouseDown(MOUSE_BUTTON_LEFT)) {
-        //     eff2->position = Vec3(targetPosition);
-        // }
+        body1.setHip(hip+Vec3(-0.2f, 0));
+        body2.setHip(hip+Vec3(0.0f, 0));
     }
 
     void render() override {

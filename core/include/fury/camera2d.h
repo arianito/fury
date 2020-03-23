@@ -11,8 +11,8 @@
 
 struct Camera2d : public Entity {
     static Camera2d *instance();
-    Mat4 view;
-    Mat4 projection;
+    Mat4 view = Mat4::identify;
+    Mat4 projection = Mat4::identify;
     f32 horizon = 10.0f;
     Vec2 position{0, 0};
     f32 zoom = 1;
