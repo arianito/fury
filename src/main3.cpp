@@ -117,7 +117,7 @@ struct Body1 : public Entity {
     void create() override {
         sk.add(new Joint{Vec3{0, 0}, new Effector{Vec3{0, 0}}});
         sk.add(new Joint{Vec3{0.5, 0}});
-        sk.add(new Joint{Vec3{1, 0}, new Effector{Vec3{1, 0}}});
+        sk.add(new Joint{Vec3{1.1, 0}, new Effector{Vec3{0.95, 0}}});
         sk.init();
     }
     void setHip(const Vec3& pos) {
@@ -197,43 +197,63 @@ class Win1 : public Window {
         draw.setCamera(camera->view, camera->projection);
 
         auto p = -input->getAxis(1);
+        bool run = input->keyPress(KEY_LEFT_SHIFT);
         if(Math::abs(p) < 0.1f) {
-            lega = Vec3::lerp(lega, Vec3(-0.1f, -1), 0.1f);
-            legb = Vec3::lerp(legb, Vec3(0.2f, -1), 0.1f);
-            hip = Vec3::lerp(hip, Vec3(targetPosition), 0.1f);
+            lega = Vec3::lerp(lega, Vec3(-0.1f, -0.95), 0.1f);
+            legb = Vec3::lerp(legb, Vec3(0.2f, -0.95), 0.1f);
+            hip = Vec3::lerp(hip, Vec3(0, 0), 0.1f);
         } else{
-            a += time->deltaTime * 4 * p;
+
+            if(run)
+                a += time->deltaTime * 8 * p;
+            else
+                a += time->deltaTime * 4 * p;
+
             if (a < -2*Math::PI) {
                 a += 2*Math::PI;
             }else if(a > 2*Math::PI) {
                 a -= 2*Math::PI;
             }
 
-
-            auto t0 = a + 0.5f * 2 * Math::PI;
-            auto theta1 = t0 + Math::ramp(-Math::cos(t0)) * Math::sin(t0);
-            auto t1 = a + 1.0f * 2 * Math::PI;
-            auto theta2 = t1 + Math::ramp(-Math::cos(t1)) * Math::sin(t1);
-
-
-            auto t2 = a;
-            auto theta3 = t2 * 2.0f;
-
+            auto theta1 = 0.0f;
+            auto theta2 = 0.0f;
+            auto theta3 = 0.0f;
             auto ws = 0.5f;
             auto hs = 0.3f;
 
+            if(run){
+                theta1 = a + 0.5f * 2 * Math::PI;
+                theta2 = a + 1.0f * 2 * Math::PI;
+                theta3 = a * 2.0f;
+            }else{
+                auto t0 = a + 0.5f * 2 * Math::PI;
+                auto t1 = a + 1.0f * 2 * Math::PI;
+                auto t2 = a;
+                theta1 = t0 + Math::ramp(-Math::cos(t0)) * Math::sin(t0);
+                theta2 = t1 + Math::ramp(-Math::cos(t1)) * Math::sin(t1);
+                theta3 = t2 * 2.0f;
+            }
 
-            lega = Vec3{Math::cos(theta1) * ws, Math::sin(theta1) * hs, 0};
+
+            if(run)
+                lega = Vec3{Math::cos(theta1) * ws - ws/2.0f, Math::sin(theta1) * hs, 0};
+            else
+                lega = Vec3{Math::cos(theta1) * ws, Math::sin(theta1) * hs, 0};
+
             if(lega[1] < 0)
                 lega[1] = 0;
-            lega[1] -= 1;
-
-            legb = Vec3{Math::cos(theta2) * ws, Math::sin(theta2) * hs, 0};
+            lega[1] -= 0.95;
+            if(run)
+                legb = Vec3{Math::cos(theta2) * ws - ws/2.0f, Math::sin(theta2) * hs, 0};
+            else
+                legb = Vec3{Math::cos(theta2) * ws, Math::sin(theta2) * hs, 0};
             if(legb[1] < 0)
                 legb[1] = 0;
-            legb[1] -= 1;
+            legb[1] -= 0.95;
 
-            hip = Vec3{Math::cos(theta3)*0.05f, Math::sin(theta3)*0.1f} + Vec3(targetPosition);
+            hip = Vec3{Math::cos(theta3)*0.05f, Math::sin(theta3)*0.1f};
+            if(run)
+                hip = hip + Vec3(0.2f, -0.2f);
 
         }
 
