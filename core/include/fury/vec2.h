@@ -34,21 +34,31 @@ struct Vec2 : Uniform<2, 1> {
 
 
     [[nodiscard]] f32 dot(const Vec2 &a) const;
+
     [[nodiscard]] f32 magnitude() const;
+
     [[nodiscard]] f32 sqrMagnitude() const;
+
     [[nodiscard]] Vec2 normal() const;
+
     [[nodiscard]] Vec2 perpendicularClockwise() const;
+
     [[nodiscard]] Vec2 perpendicularCounterClockwise() const;
 
 
     void set(f32 x, f32 y);
 
 
-    static f32 dot(const Vec2& a, const Vec2& b);
-    static f32 magnitude(const Vec2& a);
-    static f32 sqrMagnitude(const Vec2& a);
-    static Vec2 normalize(const Vec2& a);
+    static f32 dot(const Vec2 &a, const Vec2 &b);
+
+    static f32 magnitude(const Vec2 &a);
+
+    static f32 sqrMagnitude(const Vec2 &a);
+
+    static Vec2 normalize(const Vec2 &a);
+
     static f32 angle(const Vec2 &from, const Vec2 &to);
+
     static f32 distance(const Vec2 &a, const Vec2 &b);
 
     // operators

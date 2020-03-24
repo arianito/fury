@@ -5,6 +5,7 @@
 #include "fury/camera2d.h"
 
 Camera2d *Camera2d::m_instance = nullptr;
+
 Camera2d *Camera2d::instance() {
     if (!m_instance)
         m_instance = new Camera2d();
@@ -59,10 +60,9 @@ Vec2 Camera2d::convert(const Mat4 &m, const Vec2 &p) {
     pos[0] *= pos[3];
     pos[1] *= pos[3];
     pos[2] *= pos[3];
-
-    if(isnan(pos[0]))
+    if (std::isnan(pos[0]))
         pos[0] = 0;
-    if(isnan(pos[1]))
+    if (std::isnan(pos[1]))
         pos[1] = 0;
     return {pos[0], pos[1]};
 }

@@ -30,16 +30,17 @@ void log_trace(Args const &... args) {
 
 
 template<typename... Args>
-void log_info(const char * __format, Args const &... args) {
+void log_info(const char *__format, Args const &... args) {
     fprintf(stdout, __format, args...);
 }
+
 template<typename... Args>
-void log_error(const char * __format, Args const &... args) {
+void log_error(const char *__format, Args const &... args) {
     fprintf(stderr, __format, args...);
 }
 
 template<typename... Args>
-void log_fatal(const char * __format, Args const &... args) {
+void log_fatal(const char *__format, Args const &... args) {
     fprintf(stderr, __format, args...);
     glfwTerminate();
     exit(-1);

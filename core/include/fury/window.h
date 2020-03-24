@@ -19,6 +19,8 @@ struct Window {
 
     virtual void init() {};
 
+    virtual void gui() {};
+
     virtual void create() {};
 
     virtual void update() {};
@@ -38,7 +40,7 @@ public:
     Input *input = nullptr;
     Time *time = nullptr;
     Display *display = nullptr;
-    List<Entity*> entities;
+    List<Entity *> entities;
 };
 
 #endif

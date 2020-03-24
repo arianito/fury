@@ -8,8 +8,6 @@ const Vec4 Vec4::one{1.0f, 1.0f, 1.0f, 1.0f};
 const Vec4 Vec4::zero{0.0f, 0.0f, 0.0f, 0.0f};
 
 
-
-
 f32 &Vec4::x() {
     return data[0];
 }
@@ -83,7 +81,6 @@ Vec3 Vec4::yzw() const {
 }
 
 
-
 f32 Vec4::dot(const Vec4 &a) const {
     return data[0] * a[0] + data[1] * a[1] + data[2] * a[2] + data[3] * a[3];
 }
@@ -105,7 +102,7 @@ Vec4 Vec4::normal() const {
 
 
 const f32 Vec4::dot(const Vec4 &a, const Vec4 &b) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]+ a[3] * b[3];
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
 }
 
 const f32 Vec4::magnitude(const Vec4 &a) {

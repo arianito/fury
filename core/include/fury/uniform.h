@@ -67,12 +67,11 @@ struct Uniform {
     };
 
 
-
     friend bool operator==(const Uniform &a, const Uniform &b) {
-        if(a.n != b.n)
+        if (a.n != b.n)
             return false;
         for (auto i = 0; i < a.n; i++) {
-            if(a[i] != b[i])
+            if (a[i] != b[i])
                 return false;
         }
         return true;
@@ -84,6 +83,7 @@ struct Uniform {
         }
         return *this;
     };
+
     Uniform<A, B, T> &operator=(const Uniform<A, B, T> &&a) {
         for (auto i = 0; i < this->n; i++) {
             this->data[i] = a[i];

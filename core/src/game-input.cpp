@@ -14,6 +14,10 @@ void Input::moveAxis(u16 ax, bool low, bool high) {
 }
 
 void Input::update() {
+    for (int i = 0; i < 350; i++)
+        lastKeyboardState[i] = keyboardState[i];
+    for (int i = 0; i < 8; i++)
+        lastMouseState[i] = mouseState[i];
     moveAxis(AXIS_HORIZONTAL, keyPress(KEY_LEFT) || keyPress(KEY_A), keyPress(KEY_RIGHT) || keyPress(KEY_D));
     moveAxis(AXIS_VERTICAL, keyPress(KEY_DOWN) || keyPress(KEY_S), keyPress(KEY_UP) || keyPress(KEY_W));
     glfwGetCursorPos(gwin, &xpos, &ypos);
@@ -36,45 +40,31 @@ f32 Input::x() const {
 }
 
 bool Input::mousePress(u16 key) {
-    if (key < 0)
-        return false;
-    return glfwGetMouseButton(gwin, key) != 0;
+    mouseState[key] = glfwGetMouseButton(gwin, key);
+    return mouseState[key] != 0;
 }
 
 bool Input::mouseUp(u16 key) {
-    if (key < 0)
-        return false;
-    lastMouseState[key] = mouseState[key];
     mouseState[key] = glfwGetMouseButton(gwin, key);
     return !mouseState[key] && lastMouseState[key];
 }
 
 bool Input::mouseDown(u16 key) {
-    if (key < 0)
-        return false;
-    lastMouseState[key] = mouseState[key];
     mouseState[key] = glfwGetMouseButton(gwin, key);
     return mouseState[key] && !lastMouseState[key];
 }
 
 bool Input::keyPress(u16 key) {
-    if (key < 0)
-        return false;
-    return glfwGetKey(gwin, key) != 0;
+    keyboardState[key] = glfwGetKey(gwin, key);
+    return keyboardState[key] != 0;
 }
 
 bool Input::keyUp(u16 key) {
-    if (key < 0)
-        return false;
-    lastKeyboardState[key] = keyboardState[key];
     keyboardState[key] = glfwGetKey(gwin, key);
     return !keyboardState[key] && lastKeyboardState[key];
 }
 
 bool Input::keyDown(u16 key) {
-    if (key < 0)
-        return false;
-    lastKeyboardState[key] = keyboardState[key];
     keyboardState[key] = glfwGetKey(gwin, key);
     return keyboardState[key] && !lastKeyboardState[key];
 }

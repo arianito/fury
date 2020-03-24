@@ -1,5 +1,6 @@
 
 #include <fury/core.h>
+#include <imgui/imgui.h>
 
 struct Effector {
     Vec3 position;
@@ -10,7 +11,7 @@ struct Joint {
 };
 
 struct Skeleton {
-    Effector* pole = nullptr;
+    Effector *pole = nullptr;
     Vector<Joint *> joints;
     f32 snapBackStrength = 0.4f;
 
@@ -57,8 +58,9 @@ struct Skeleton {
                 auto j1 = joints.at(i);
                 auto j2 = joints.at(i + 1);
                 auto angle = Vec3::signedAngle(j1->position - j0->position, j2->position - j1->position, Vec3::forward);
-                
-                j2->position = Vec3::lerp(j2->position, j1->position + Vec3(Math::cos(ang), Math::sin(ang), 0) * len, snapBackStrength);
+
+                j2->position = Vec3::lerp(j2->position, j1->position + Vec3(Math::cos(ang), Math::sin(ang), 0) * len,
+                                          snapBackStrength);
                 ang += angle;
             }
         }
@@ -71,14 +73,16 @@ struct Skeleton {
                 } else {
                     if (i < m_Len - 1) {
                         auto j2 = joints.at(i + 1);
-                        j1->position = Vec3::lerp(j1->position, j2->position + (j1->position - j2->position).normal() * m_BoneLengths.at(i), snapBackStrength);
+                        j1->position = Vec3::lerp(j1->position, j2->position + (j1->position - j2->position).normal() *
+                                                                               m_BoneLengths.at(i), snapBackStrength);
                     }
                 }
             }
             for (int i = 1; i < m_Len; i++) {
                 auto j0 = joints.at(i - 1);
                 auto j1 = joints.at(i);
-                j1->position = Vec3::lerp(j1->position, j0->position + (j1->position - j0->position).normal() * m_BoneLengths.at(i - 1), snapBackStrength);
+                j1->position = Vec3::lerp(j1->position, j0->position + (j1->position - j0->position).normal() *
+                                                                       m_BoneLengths.at(i - 1), snapBackStrength);
             }
         }
 
@@ -90,12 +94,13 @@ struct Skeleton {
             auto h = (j2->position - j0->position) / 2.0f;
             auto plane = Plane(h, j0->position);
 
-            auto p =  h + Vec3(-h.y(), h.x(), 0) * 4.0f;
+            auto p = h + Vec3(-h.y(), h.x(), 0) * 4.0f;
 
             auto projectedPole = plane.closestPointOnPlane(p);
             auto projectedBone = plane.closestPointOnPlane(j1->position);
             auto angle = Vec3::signedAngle(projectedBone - j0->position, projectedPole - j0->position, plane.normal());
-            j1->position = Quaternion::fromAngleAxis(angle, plane.normal()) * (j1->position - j0->position) + j0->position;
+            j1->position =
+                    Quaternion::fromAngleAxis(angle, plane.normal()) * (j1->position - j0->position) + j0->position;
         }
     }
 
@@ -120,11 +125,12 @@ struct Body1 : public Entity {
         sk.add(new Joint{Vec3{1.1, 0}, new Effector{Vec3{0.95, 0}}});
         sk.init();
     }
-    void setHip(const Vec3& pos) {
+
+    void setHip(const Vec3 &pos) {
         sk.joints.at(0)->effector->position = pos;
     }
 
-    void setLeg(const Vec3& pos) {
+    void setLeg(const Vec3 &pos) {
         sk.joints.at(sk.size() - 1)->effector->position = pos;
     }
 
@@ -134,6 +140,7 @@ struct Body1 : public Entity {
     }
 
     bool a = false;
+
     void render() override {
         sk.resolve();
         f32 ang = 0;
@@ -155,8 +162,9 @@ struct Body1 : public Entity {
                     auto j1 = sk.joints.at(i);
                     auto j2 = sk.joints.at(i + 1);
                     auto len = sk.m_BoneLengths.at(i);
-                    auto angle = Vec3::signedAngle(j1->position - j0->position, j2->position - j1->position, Vec3::forward);
-                    draw->segment(j0->position.xy(), j2->position.xy(), Color(1,1,1,0.3));
+                    auto angle = Vec3::signedAngle(j1->position - j0->position, j2->position - j1->position,
+                                                   Vec3::forward);
+                    draw->segment(j0->position.xy(), j2->position.xy(), Color(1, 1, 1, 0.3));
                     ang += angle;
                 }
             }
@@ -170,7 +178,6 @@ struct Body1 : public Entity {
 private:
     Skeleton sk;
 };
-
 
 class Win1 : public Window {
     DebugDraw draw;
@@ -186,33 +193,38 @@ class Win1 : public Window {
         add(&body2);
     }
 
+    void create() override {
+    }
+
     f32 a = 0;
     Vec3 lega{0, -1};
     Vec3 legb{0, -1};
     Vec3 legc{0, -1};
     Vec3 legd{0, -1};
     Vec3 hip{0, 0};
+
     void update() override {
         auto targetPosition = camera->screenToWorld(input->position());
         draw.setCamera(camera->view, camera->projection);
 
         auto p = -input->getAxis(1);
         bool run = input->keyPress(KEY_LEFT_SHIFT);
-        if(Math::abs(p) < 0.1f) {
+        if (Math::abs(p) < 0.1f) {
             lega = Vec3::lerp(lega, Vec3(-0.1f, -0.95), 0.1f);
             legb = Vec3::lerp(legb, Vec3(0.2f, -0.95), 0.1f);
             hip = Vec3::lerp(hip, Vec3(0, 0), 0.1f);
-        } else{
+            a = 0;
+        } else {
 
-            if(run)
+            if (run)
                 a += time->deltaTime * 8 * p;
             else
                 a += time->deltaTime * 4 * p;
 
-            if (a < -2*Math::PI) {
-                a += 2*Math::PI;
-            }else if(a > 2*Math::PI) {
-                a -= 2*Math::PI;
+            if (a < -2 * Math::PI) {
+                a += 2 * Math::PI;
+            } else if (a > 2 * Math::PI) {
+                a -= 2 * Math::PI;
             }
 
             auto theta1 = 0.0f;
@@ -221,51 +233,55 @@ class Win1 : public Window {
             auto ws = 0.5f;
             auto hs = 0.3f;
 
-            if(run){
+            if (run) {
                 theta1 = a + 0.5f * 2 * Math::PI;
                 theta2 = a + 1.0f * 2 * Math::PI;
                 theta3 = a * 2.0f;
-            }else{
+                lega = Vec3{Math::cos(theta1) * ws - ws / 2.0f, Math::sin(theta1) * hs, 0};
+                legb = Vec3{Math::cos(theta2) * ws - ws / 2.0f, Math::sin(theta2) * hs, 0};
+                hip = Vec3{Math::cos(theta3) * 0.05f, Math::sin(theta3) * 0.1f};
+                hip = hip + Vec3(0.2f, -0.2f);
+            } else {
                 auto t0 = a + 0.5f * 2 * Math::PI;
                 auto t1 = a + 1.0f * 2 * Math::PI;
                 auto t2 = a;
                 theta1 = t0 + Math::ramp(-Math::cos(t0)) * Math::sin(t0);
                 theta2 = t1 + Math::ramp(-Math::cos(t1)) * Math::sin(t1);
                 theta3 = t2 * 2.0f;
+                lega = Vec3{Math::cos(theta1) * ws, Math::sin(theta1) * hs, 0};
+                legb = Vec3{Math::cos(theta2) * ws, Math::sin(theta2) * hs, 0};
+                hip = Vec3{Math::cos(theta3) * 0.05f, Math::sin(theta3) * 0.1f};
             }
 
 
-            if(run)
-                lega = Vec3{Math::cos(theta1) * ws - ws/2.0f, Math::sin(theta1) * hs, 0};
-            else
-                lega = Vec3{Math::cos(theta1) * ws, Math::sin(theta1) * hs, 0};
-
-            if(lega[1] < 0)
+            if (lega[1] < 0)
                 lega[1] = 0;
             lega[1] -= 0.95;
-            if(run)
-                legb = Vec3{Math::cos(theta2) * ws - ws/2.0f, Math::sin(theta2) * hs, 0};
-            else
-                legb = Vec3{Math::cos(theta2) * ws, Math::sin(theta2) * hs, 0};
-            if(legb[1] < 0)
+
+
+            if (legb[1] < 0)
                 legb[1] = 0;
             legb[1] -= 0.95;
-
-            hip = Vec3{Math::cos(theta3)*0.05f, Math::sin(theta3)*0.1f};
-            if(run)
-                hip = hip + Vec3(0.2f, -0.2f);
-
         }
 
         body1.setLeg(lega);
         body2.setLeg(legb);
 
-        body1.setHip(hip+Vec3(-0.2f, 0));
-        body2.setHip(hip+Vec3(0.0f, 0));
+        body1.setHip(hip + Vec3(-0.2f, 0));
+        body2.setHip(hip + Vec3(0.0f, 0));
+    }
+
+    void gui() override {
+        bool open;
+        ImGui::Begin("Another Window", &open);
+        ImGui::Text("Hello from another window!");
+        ImGui::Text("Hello from another window!");
+        ImGui::End();
     }
 
     void render() override {
         draw.pivot(Vec2::zero);
+
     }
 };
 

@@ -1,5 +1,7 @@
 //
 // Created by aryan on 3/20/20.
+// borrowed from
+// https://github.com/tobias-stein/EntityComponentSystem
 //
 
 #ifndef GAME_ALLOCATOR_H
@@ -32,7 +34,7 @@ public:
 
     static inline void *alignForward(void *address, u8 alignment) {
         return (void *) ((reinterpret_cast<uptr>(address) + static_cast<uptr>(alignment - 1)) &
-                         static_cast<uptr>(~(u8)(alignment - 1)));
+                         static_cast<uptr>(~(u8) (alignment - 1)));
     }
 
     static inline u8 getAdjustment(const void *address, u8 alignment) {

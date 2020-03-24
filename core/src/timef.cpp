@@ -5,6 +5,7 @@
 #include "fury/timef.h"
 
 Time *Time::m_instance = nullptr;
+
 Time *Time::instance() {
     if (!m_instance)
         m_instance = new Time();

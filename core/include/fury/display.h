@@ -13,6 +13,7 @@ struct Display {
     inline f32 ratio() {
         return width / height;
     }
+
 private:
     static Display *m_instance;
 };

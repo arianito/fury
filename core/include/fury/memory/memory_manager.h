@@ -1,5 +1,7 @@
 //
 // Created by aryan on 3/20/20.
+// borrowed from
+// https://github.com/tobias-stein/EntityComponentSystem
 //
 
 #ifndef GAME_MEMORY_MANAGER_H

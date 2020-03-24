@@ -149,6 +149,7 @@
 struct Input {
 public:
     static Input *instance(GLFWwindow *window, Time *t);
+
     static Input *instance();
 
     Input(GLFWwindow *window, Time *t);
@@ -181,19 +182,19 @@ public:
 
 private:
     static Input *m_instance;
-    u8 keyboardState[350]{};
-    u8 lastKeyboardState[350]{};
+    u8 keyboardState[350];
+    u8 lastKeyboardState[350];
 
-    u8 mouseState[8]{};
-    u8 lastMouseState[8]{};
+    u8 mouseState[8];
+    u8 lastMouseState[8];
 
 
-    float axises[2]{};
-    float axisesVelocity[2]{};
+    float axises[2];
+    float axisesVelocity[2];
 
     GLFWwindow *gwin;
     Time *time;
-    double xpos{}, ypos{};
+    double xpos = 0, ypos = 0;
 
     void moveAxis(u16 ax, bool low, bool high);
 };

@@ -8,12 +8,14 @@
 #include "fury/entity.h"
 #include "fury/mat4.h"
 #include "fury/vec4.h"
+#include <cmath>
 
 struct Camera2d : public Entity {
     static Camera2d *instance();
+
     Mat4 view = Mat4::identify;
     Mat4 projection = Mat4::identify;
-    f32 horizon = 10.0f;
+    f32 horizon = 5.0f;
     Vec2 position{0, 0};
     f32 zoom = 1;
 
@@ -23,6 +25,7 @@ struct Camera2d : public Entity {
 
 private:
     static Camera2d *m_instance;
+
     Vec2 convert();
 
     Vec2 convert(const Mat4 &m, const Vec2 &p);

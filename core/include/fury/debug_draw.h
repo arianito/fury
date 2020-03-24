@@ -106,11 +106,16 @@ private:
     GLint m_colorAttribute;
 };
 
-struct DebugDraw: public Entity {
+struct DebugDraw : public Entity {
 public:
+    static DebugDraw *instance();
+
     void awake() override;
+
     void render() override;
+
     void dispose() override;
+
     void setCamera(const Mat4 &v, const Mat4 &p);
 
     void segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
@@ -120,13 +125,16 @@ public:
     void solidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
 
     void circle(const Vec2 &center, float radius, const Color &color);
+
     void solidCircle(const Vec2 &center, float radius, const Color &color);
 
     void point(const Vec2 &p, float size, const Color &color);
+
     void pivot(const Vec2 &p);
 
 
 private:
+    static DebugDraw *m_instance;
     GLRenderPoints *m_points;
     GLRenderLines *m_lines;
     GLRenderTriangles *m_triangles;

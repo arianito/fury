@@ -81,7 +81,8 @@ struct Vec3 : Uniform<3, 1> {
 
     static const Vec3 moveTowards(const Vec3 &current, const Vec3 &target, const f32 &maxDistanceDelta);
 
-    static const Vec3 smoothDamp(const Vec3 &current, const Vec3 &target, Vec3 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime);
+    static const Vec3 smoothDamp(const Vec3 &current, const Vec3 &target, Vec3 &currentVelocity, const f32 &smoothTime,
+                                 const f32 &maxSpeed, const f32 &deltaTime);
 
     static const Vec3 reflect(const Vec3 &inDirection, const Vec3 &inNormal);
 

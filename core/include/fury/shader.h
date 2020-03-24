@@ -17,7 +17,7 @@
 #include "color.h"
 #include "entity.h"
 
-struct Shader: public Entity {
+struct Shader : public Entity {
 
     void fromFile(const String &vs, const String &fs);
 

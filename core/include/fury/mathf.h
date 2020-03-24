@@ -95,9 +95,12 @@ struct Math {
 
     static const f32 deltaAngle(const f32 &current, const f32 &target);
 
-    static f32 smoothDamp(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime);
+    static f32
+    smoothDamp(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed,
+               const f32 &deltaTime);
 
-    static f32 smoothDampAngle(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime);
+    static f32 smoothDampAngle(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime,
+                               const f32 &maxSpeed, const f32 &deltaTime);
 
     static bool lineIntersection(const Vec2 &p1, const Vec2 &p2, const Vec2 &p3, const Vec2 &p4, Vec2 &result);
 

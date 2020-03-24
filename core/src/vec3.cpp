@@ -136,7 +136,8 @@ const Vec3 Vec3::moveTowards(const Vec3 &current, const Vec3 &target, const f32 
     return current + toVector / dist * maxDistanceDelta;
 }
 
-const Vec3 Vec3::smoothDamp(const Vec3 &current, const Vec3 &target, Vec3 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime) {
+const Vec3 Vec3::smoothDamp(const Vec3 &current, const Vec3 &target, Vec3 &currentVelocity, const f32 &smoothTime,
+                            const f32 &maxSpeed, const f32 &deltaTime) {
 
     auto smoothTime0 = Math::max(0.0001F, smoothTime);
     f32 omega = 2.0F / smoothTime0;

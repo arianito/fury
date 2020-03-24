@@ -1,5 +1,7 @@
 //
 // Created by aryan on 3/20/20.
+// borrowed from
+// https://github.com/tobias-stein/EntityComponentSystem
 //
 
 #ifndef GAME_MEMORY_CHUNK_ALLOCATOR_H
@@ -97,7 +99,7 @@ public:
 
 
         auto *allocator = new Allocator(ALLOC_SIZE, allocate(ALLOC_SIZE, allocatorTag), sizeof(OBJECT_TYPE),
-                                             alignof(OBJECT_TYPE));
+                                        alignof(OBJECT_TYPE));
         this->m_Chunks.push_back(new MemoryChunk(allocator));
     }
 
@@ -138,7 +140,7 @@ public:
         // all chunks are full... allocate a new one
         if (slot == nullptr) {
             auto *allocator = new Allocator(ALLOC_SIZE, Allocate(ALLOC_SIZE, this->m_AllocatorTag),
-                                                 sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
+                                            sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
             auto *newChunk = new MemoryChunk(allocator);
             // put new chunk in front
             this->m_Chunks.push_front(newChunk);

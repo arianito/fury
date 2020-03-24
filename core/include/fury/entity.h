@@ -13,8 +13,12 @@
 
 struct Entity {
     virtual void create() {};
+
     virtual void awake() {};
+
     virtual void sleep() {};
+
+    virtual void gui() {};
 
     virtual void dispose() {};
 

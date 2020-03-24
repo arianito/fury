@@ -350,6 +350,14 @@ void GLRenderTriangles::update(const Mat4 &v, const Mat4 &p) {
     projection = p;
 }
 
+DebugDraw *DebugDraw::m_instance = nullptr;
+
+DebugDraw *DebugDraw::instance() {
+    if (!m_instance)
+        m_instance = new DebugDraw();
+    return m_instance;
+}
+
 void DebugDraw::awake() {
     m_points = new GLRenderPoints();
     m_points->create();
