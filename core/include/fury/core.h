@@ -1,17 +1,14 @@
-//
-// Created by Aryan on 10/29/18.
-//
+#pragma once
 
-#ifndef FURY_CORE_H
-#define FURY_CORE_H
 
 #include <iostream>
 
+#include <cassert>
 #include "trace.h"
 #include "path.h"
 #include "mathf.h"
 #include "file.h"
-#include "game-input.h"
+#include "game_input.h"
 
 #include "system.h"
 #include "uniform.h"
@@ -24,16 +21,18 @@
 #include "color.h"
 
 
-#include "timef.h"
+#include "game_time.h"
 #include "display.h"
 #include "shader.h"
 #include "window.h"
-#include "triangle.h"
-#include "box.h"
 #include "debug_draw.h"
-#include "entity.h"
 #include "camera2d.h"
 #include "ray.h"
 #include "plane.h"
 
-#endif //ORBITAL_GL_CORE_H
+#include "ecs/entity_manager.h"
+#include "ecs/component.h"
+#include "ecs/entity.h"
+#include "ecs/system.h"
+#include "ecs/base_system.h"
+#include "ecs/ecs_types.h"

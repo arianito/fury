@@ -1,20 +1,14 @@
-//
-// Created by aryan on 3/20/20.
-// borrowed from
-// https://github.com/tobias-stein/EntityComponentSystem
-//
+#pragma once
 
-#ifndef GAME_MEMORY_CHUNK_ALLOCATOR_H
-#define GAME_MEMORY_CHUNK_ALLOCATOR_H
 
 #include "pool_allocator.h"
 #include "global_memory_user.h"
 #include <list>
 
-template<class OBJECT_TYPE, size T>
+template<class OBJECT_TYPE, size_t T>
 class MemoryChunkAllocator : protected GlobalMemoryUser {
-    static const size MAX_OBJECTS = T;
-    static const size ALLOC_SIZE = (sizeof(OBJECT_TYPE) + alignof(OBJECT_TYPE)) * MAX_OBJECTS;
+    static const size_t MAX_OBJECTS = T;
+    static const size_t ALLOC_SIZE = (sizeof(OBJECT_TYPE) + alignof(OBJECT_TYPE)) * MAX_OBJECTS;
     const char *m_AllocatorTag;
 
 public:
@@ -27,12 +21,12 @@ public:
         Allocator *allocator;
         ObjectList objects;
 
-        uptr chunkStart{};
-        uptr chunkEnd{};
+        std::uintptr_t chunkStart{};
+        std::uintptr_t chunkEnd{};
 
         explicit MemoryChunk(Allocator *allocator) :
                 allocator(allocator) {
-            this->chunkStart = reinterpret_cast<uptr>(allocator->getMemoryAddress0());
+            this->chunkStart = reinterpret_cast<std::uintptr_t>(allocator->getMemoryAddress0());
             this->chunkEnd = this->chunkStart + ALLOC_SIZE;
             this->objects.clear();
         }
@@ -156,7 +150,7 @@ public:
     }
 
     void destroyObject(void *object) {
-        uptr adr = reinterpret_cast<uptr>(object);
+        std::uintptr_t adr = reinterpret_cast<std::uintptr_t>(object);
         for (auto chunk : this->m_Chunks) {
             if (chunk->chunkStart <= adr && adr < chunk->chunkEnd) {
                 chunk->objects.remove((OBJECT_TYPE *) object);
@@ -172,5 +166,3 @@ public:
     inline iterator end() { return iterator(this->m_Chunks.end(), this->m_Chunks.end()); }
 
 };
-
-#endif

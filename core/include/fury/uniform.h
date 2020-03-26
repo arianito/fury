@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef GAME_UNIFORM_H
-#define GAME_UNIFORM_H
+#pragma once
 
 #include <iostream>
 #include <ostream>
@@ -159,5 +154,3 @@ struct Uniform {
     }
 
 };
-
-#endif //GAME_UNIFORM_H

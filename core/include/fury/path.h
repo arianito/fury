@@ -1,5 +1,4 @@
-#ifndef FURY_PATH_H
-#define FURY_PATH_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -28,13 +27,13 @@
 
 
 struct Path {
-    static const String runningPath() {
+    static const std::string runningPath() {
         char cCurrentPath[FILENAME_MAX];
         if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath))) {
-            return String();
+            return std::string();
         }
         cCurrentPath[sizeof(cCurrentPath) - 1] = '\0';
-        return String(cCurrentPath);
+        return std::string(cCurrentPath);
     }
 
     static char separator() {
@@ -45,11 +44,11 @@ struct Path {
 #endif
     }
 
-    static String const &to_string(String const &s) { return s; }
+    static std::string const &to_string(std::string const &s) { return s; }
 
     template<typename... Args>
-    static String join(Args const &... args) {
-        String result;
+    static std::string join(Args const &... args) {
+        std::string result;
         int unpack[]{0, (result += to_string(args) + separator(), 0)...};
         static_cast<void>(unpack);
         result.pop_back();
@@ -57,10 +56,7 @@ struct Path {
     }
 
     template<typename... Args>
-    static String local(Args const &... args) {
+    static std::string local(Args const &... args) {
         return join(runningPath(), args...);
     }
 };
-
-
-#endif

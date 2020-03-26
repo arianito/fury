@@ -1,21 +1,12 @@
-
-#ifndef FURY_GRAPHICS_DISPLAY_H
-#define FURY_GRAPHICS_DISPLAY_H
+#pragma once
 
 #include "system.h"
 
 struct Display {
-    static Display *instance();
+    static f32 Width;
+    static f32 Height;
 
-    f32 width;
-    f32 height;
-
-    inline f32 ratio() {
-        return width / height;
+    static inline f32 GetRatio() {
+        return Width / Height;
     }
-
-private:
-    static Display *m_instance;
 };
-
-#endif

@@ -38,7 +38,7 @@ struct Skeleton {
         return joints.at(i);
     }
 
-    [[nodiscard]] const int &size() const {
+    const int &size() const {
         return m_Len;
     }
 

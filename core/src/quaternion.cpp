@@ -46,14 +46,14 @@ const Quaternion Quaternion::fromMatrix(const Uniform<4, 4> &m) {
         q[2] = (m.data[1] - m.data[4]) * fRoot;
     } else {
         // |w| <= 1/2
-        static const size s_iNext[3] = {1, 2, 0};
-        size i = 0;
+        static const size_t s_iNext[3] = {1, 2, 0};
+        size_t i = 0;
         if (m.data[5] > m.data[0])
             i = 1;
         if (m.data[10] > m.data[i * 4 + i])
             i = 2;
-        size j = s_iNext[i];
-        size k = s_iNext[j];
+        size_t j = s_iNext[i];
+        size_t k = s_iNext[j];
 
         fRoot = Math::sqrt(m.data[i * 4 + i] - m.data[j * 4 + j] - m.data[k * 4 + k] + 1.0f);
         q[i] = 0.5f * fRoot;

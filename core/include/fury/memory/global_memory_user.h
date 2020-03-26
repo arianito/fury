@@ -1,11 +1,4 @@
-//
-// Created by aryan on 3/20/20.
-// borrowed from
-// https://github.com/tobias-stein/EntityComponentSystem
-//
-
-#ifndef GAME_GLOBAL_MEMORY_USER_H
-#define GAME_GLOBAL_MEMORY_USER_H
+#pragma once
 
 #include "memory_manager.h"
 
@@ -18,5 +11,3 @@ public:
 
     virtual inline void free(void *pMem) = 0;
 };
-
-#endif

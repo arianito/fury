@@ -1,10 +1,4 @@
-
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_VEC4_H
-#define FURY_PRIMITIVES_VEC4_H
+#pragma once
 
 
 #include "system.h"
@@ -33,23 +27,23 @@ struct Vec4 : Uniform<4, 1> {
 
     f32 &x();
 
-    [[nodiscard]] f32 x() const;
+    f32 x() const;
 
     f32 &y();
 
-    [[nodiscard]] f32 y() const;
+    f32 y() const;
 
     f32 &z();
 
-    [[nodiscard]] f32 z() const;
+    f32 z() const;
 
     f32 &w();
 
-    [[nodiscard]] f32 w() const;
+    f32 w() const;
 
     Vec2 &xy();
 
-    [[nodiscard]] Vec2 xy() const;
+    Vec2 xy() const;
 
     Vec2 &yz();
 
@@ -57,24 +51,24 @@ struct Vec4 : Uniform<4, 1> {
 
     Vec2 &zw();
 
-    [[nodiscard]] Vec2 zw() const;
+    Vec2 zw() const;
 
     Vec3 &xyz();
 
-    [[nodiscard]] Vec3 xyz() const;
+    Vec3 xyz() const;
 
     Vec3 &yzw();
 
-    [[nodiscard]] Vec3 yzw() const;
+    Vec3 yzw() const;
 
 
-    [[nodiscard]] f32 dot(const Vec4 &a) const;
+    f32 dot(const Vec4 &a) const;
 
-    [[nodiscard]] f32 magnitude() const;
+    f32 magnitude() const;
 
-    [[nodiscard]] f32 sqrMagnitude() const;
+    f32 sqrMagnitude() const;
 
-    [[nodiscard]] Vec4 normal() const;
+    Vec4 normal() const;
 
 
     static const f32 dot(const Vec4 &a, const Vec4 &b);
@@ -100,6 +94,3 @@ struct Vec4 : Uniform<4, 1> {
 
     friend Vec4 operator/(const Vec4 &a, const f32 &b);;
 };
-
-
-#endif //GAME_VEC4_H

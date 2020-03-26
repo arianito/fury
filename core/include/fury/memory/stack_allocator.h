@@ -1,11 +1,4 @@
-//
-// Created by aryan on 3/20/20.
-// borrowed from
-// https://github.com/tobias-stein/EntityComponentSystem
-//
-
-#ifndef GAME_STACK_ALLOCATOR_H
-#define GAME_STACK_ALLOCATOR_H
+#pragma once
 
 #include "allocator.h"
 
@@ -18,16 +11,14 @@ private:
 
 public:
 
-    StackAllocator(size memSize, const void *mem);
+    StackAllocator(size_t memSize, const void *mem);
 
     ~StackAllocator() override;
 
-    void *allocate(size size, u8 alignment) override;
+    void *allocate(size_t size, u8 alignment) override;
 
     void free(void *p) override;
 
     void clear() override;
 
 };
-
-#endif

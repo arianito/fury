@@ -3,9 +3,6 @@
 //
 
 #include "fury/window.h"
-#include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw.h>
-#include <imgui/imgui_impl_opengl3.h>
 
 void StyleColorsSofty() {
     ImGuiStyle *style = &ImGui::GetStyle();
@@ -89,20 +86,9 @@ i32 Window::run() {
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-    this->init();
-
+    this->Init();
 
     window = glfwCreateWindow(800, 600, "Aryan", nullptr, nullptr);
-    time = Time::instance();
-    display = Display::instance();
-    input = Input::instance(window, time);
-    for (auto &entity : entities) {
-        entity->input = input;
-        entity->display = display;
-        entity->time = time;
-        entity->window = window;
-    }
-
     if (window == nullptr) {
         log_fatal("game: Failed to load OpenGL");
         throw;
@@ -110,7 +96,7 @@ i32 Window::run() {
     glfwMakeContextCurrent(window);
     glfwSetWindowPos(window, 200, 200);
 
-    glfwSwapInterval(1);
+    glfwSwapInterval(0);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         log_fatal("game: Failed to initialize OpenGL context");
@@ -127,17 +113,10 @@ i32 Window::run() {
     ImGui_ImplOpenGL3_CreateFontsTexture();
     ImGui_ImplOpenGL3_CreateDeviceObjects();
 
-    for (auto &entity : entities) {
-        if (entity->isActive()) {
-            entity->create();
-        }
-    }
-    this->create();
-    for (auto &entity : entities) {
-        if (entity->isActive()) {
-            entity->awake();
-        }
-    }
+    this->Create();
+
+    DebugDraw::Create();
+    Input::SetWindow(window);
 
     f32 now{0}, rate{0};
     f32 accumulator{0};
@@ -145,43 +124,30 @@ i32 Window::run() {
 
     glfwSetTime(0);
     do {
-        for (auto &entity : entities) {
-            entity->validate();
-            if (entity->isActive())
-                entity->lateUpdate();
-        }
-        input->update();
+        Input::Update();
         GLint w, h;
         glfwGetFramebufferSize(window, &w, &h);
         glViewport(0, 0, w, h);
 #if __APPLE__
-        display->width = (f32) w/2;
-        display->height = (f32) h/2;
+        Display::Width = (f32) w/2;
+        Display::Height = (f32) h/2;
 #else
-        display->width = (f32) w;
-        display->height = (f32) h;
+        Display::Width = (f32) w;
+        Display::Height = (f32) h;
 #endif
         rate = static_cast<f32>(glfwGetTime() - now);
         now = static_cast<f32>(glfwGetTime());
-        time->deltaTime = rate;
-        time->smoothDeltaTime = Math::smoothDamp(time->smoothDeltaTime, rate, vel, 0.5f, 100, time->fixedDeltaTime);
-        time->elapsedTime = now;
+        Time::DeltaTime = rate;
+        Time::SmoothDeltaTime = Math::smoothDamp(Time::SmoothDeltaTime, rate, vel, 0.5f, 100, Time::FixedDeltaTime);
+        Time::ElapsedTime = now;
         if (rate > 0.25f)
             rate = 0.25f;
         accumulator += rate;
-        while (accumulator >= time->fixedDeltaTime) {
-            for (auto &entity : entities) {
-                if (entity->isActive())
-                    entity->fixedUpdate();
-            }
-            this->fixedUpdate();
-            accumulator -= time->fixedDeltaTime;
+        while (accumulator >= Time::FixedDeltaTime) {
+            this->FixedUpdate();
+            accumulator -= Time::FixedDeltaTime;
         }
-        for (auto &entity : entities) {
-            if (entity->isActive())
-                entity->update();
-        }
-        this->update();
+        this->Update();
 
         glClearColor(0.1, 0.2, 0.3, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -190,40 +156,22 @@ i32 Window::run() {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        for (auto &entity : entities) {
-            if (entity->isActive())
-                entity->render();
-        }
-        this->render();
+        this->Render();
+
+        DebugDraw::Render();
 
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        for (auto &entity : entities) {
-            if (entity->isActive())
-                entity->gui();
-        }
-        this->gui();
+        this->OnDrawGUI();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     } while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(window));
-
-    for (auto &entity : entities) {
-        entity->dispose();
-    }
-    this->dispose();
+    this->Destroy();
+    DebugDraw::Destroy();
     glfwTerminate();
     return 0;
-}
-
-void Window::add(Entity *entity) {
-    entities.emplace_back(entity);
-}
-
-
-void Window::remove(Entity *entity) {
-    entities.remove(entity);
 }

@@ -1,8 +1,9 @@
-#ifndef FURY_GAME_INPUT_H
-#define FURY_GAME_INPUT_H
+#pragma once
 
 #include "mathf.h"
-#include "timef.h"
+#include "game_time.h"
+#include "vec2.h"
+#include "vec3.h"
 
 #define AXIS_VERTICAL 0
 #define AXIS_HORIZONTAL 1
@@ -147,56 +148,41 @@
 
 
 struct Input {
-public:
-    static Input *instance(GLFWwindow *window, Time *t);
+    static bool KeyDown(u16 key);
 
-    static Input *instance();
-
-    Input(GLFWwindow *window, Time *t);
-
-    bool keyDown(u16 key);
-
-    bool keyUp(u16 key);
+    static bool KeyUp(u16 key);
 
 
-    bool keyPress(u16 key);
+    static bool KeyPress(u16 key);
 
 
-    bool mouseDown(u16 key);
+    static bool MouseDown(u16 key);
 
-    bool mouseUp(u16 key);
-
-
-    bool mousePress(u16 key);
-
-    [[nodiscard]] f32 x() const;
-
-    [[nodiscard]] f32 y() const;
-
-    [[nodiscard]] Vec2 position() const;
-
-    float getAxis(u8 a);
+    static bool MouseUp(u16 key);
 
 
-    void update();
+    static bool MousePress(u16 key);
 
+    static f32 GetX();
+
+    static f32 GetY();
+
+    static Vec2 GetXY();
+    static Vec3 GetXYZ();
+
+    static float GetAxis(u8 a);
+
+    static void Update();
+    static void SetWindow(GLFWwindow *m_Window);
 private:
-    static Input *m_instance;
-    u8 keyboardState[350];
-    u8 lastKeyboardState[350];
-
-    u8 mouseState[8];
-    u8 lastMouseState[8];
-
-
-    float axises[2];
-    float axisesVelocity[2];
-
-    GLFWwindow *gwin;
-    Time *time;
-    double xpos = 0, ypos = 0;
-
-    void moveAxis(u16 ax, bool low, bool high);
+    static u8 m_KeyboardState[350];
+    static u8 m_OldKeyboardState[350];
+    static u8 m_MouseState[8];
+    static u8 m_OldMouseState[8];
+    static float m_Axises[2];
+    static float m_AxisVelocities[2];
+    static GLFWwindow *m_Window;
+    static double m_XPos;
+    static double m_YPos;
+    static void MoveAxis(u16 ax, bool low, bool high);
 };
-
-#endif

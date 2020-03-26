@@ -1,5 +1,4 @@
-#ifndef FURY_FILE_H
-#define FURY_FILE_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -18,11 +17,11 @@
 
 struct File {
 
-    static String read(const String &path) {
+    static std::string read(const std::string &path) {
         std::ifstream vstream(path, std::ios::in);
         if (vstream.is_open()) {
-            String vscode;
-            String line;
+            std::string vscode;
+            std::string line;
             while (vstream.good()) {
                 getline(vstream, line);
                 vscode.append(line + "\n");
@@ -35,5 +34,3 @@ struct File {
         }
     }
 };
-
-#endif

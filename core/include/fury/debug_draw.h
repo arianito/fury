@@ -1,14 +1,8 @@
-//
-// Created by aryan on 3/21/20.
-//
-
-#ifndef GAME_DEBUG_DRAW_H
-#define GAME_DEBUG_DRAW_H
+#pragma once
 
 #include "vec2.h"
 #include "color.h"
 #include "shader.h"
-#include "entity.h"
 
 #define BUFFER_OFFSET(x)  ((const void*) (x))
 
@@ -106,38 +100,32 @@ private:
     GLint m_colorAttribute;
 };
 
-struct DebugDraw : public Entity {
+struct DebugDraw {
 public:
-    static DebugDraw *instance();
+    static void Create();
 
-    void awake() override;
+    static void Render();
 
-    void render() override;
+    static void Destroy();
 
-    void dispose() override;
+    static void SetCamera(const Mat4 &v, const Mat4 &p);
 
-    void setCamera(const Mat4 &v, const Mat4 &p);
+    static void Segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
 
-    void segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
+    static void Polygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
 
-    void polygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    static void SolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
 
-    void solidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    static void Circle(const Vec2 &center, float radius, const Color &color);
 
-    void circle(const Vec2 &center, float radius, const Color &color);
+    static void SolidCircle(const Vec2 &center, float radius, const Color &color);
 
-    void solidCircle(const Vec2 &center, float radius, const Color &color);
+    static void Point(const Vec2 &p, float size, const Color &color);
 
-    void point(const Vec2 &p, float size, const Color &color);
-
-    void pivot(const Vec2 &p);
-
+    static void Pivot(const Vec2 &p);
 
 private:
-    static DebugDraw *m_instance;
-    GLRenderPoints *m_points;
-    GLRenderLines *m_lines;
-    GLRenderTriangles *m_triangles;
+    static GLRenderPoints *m_Points;
+    static GLRenderLines *m_Lines;
+    static GLRenderTriangles *m_Triangles;
 };
-
-#endif //GAME_DEBUG_DRAW_H

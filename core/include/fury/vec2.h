@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_VEC2_H
-#define FURY_PRIMITIVES_VEC2_H
+#pragma once
 
 #include "uniform.h"
 
@@ -26,24 +21,24 @@ struct Vec2 : Uniform<2, 1> {
 
     f32 &x();
 
-    [[nodiscard]] f32 x() const;
+    f32 x() const;
 
     f32 &y();
 
-    [[nodiscard]] f32 y() const;
+    f32 y() const;
 
 
-    [[nodiscard]] f32 dot(const Vec2 &a) const;
+    f32 dot(const Vec2 &a) const;
 
-    [[nodiscard]] f32 magnitude() const;
+    f32 magnitude() const;
 
-    [[nodiscard]] f32 sqrMagnitude() const;
+    f32 sqrMagnitude() const;
 
-    [[nodiscard]] Vec2 normal() const;
+    Vec2 normal() const;
 
-    [[nodiscard]] Vec2 perpendicularClockwise() const;
+    Vec2 perpendicularClockwise() const;
 
-    [[nodiscard]] Vec2 perpendicularCounterClockwise() const;
+    Vec2 perpendicularCounterClockwise() const;
 
 
     void set(f32 x, f32 y);
@@ -77,6 +72,3 @@ struct Vec2 : Uniform<2, 1> {
     friend Vec2 operator/(const Vec2 &a, const f32 &b);;
 
 };
-
-
-#endif //GAME_VEC2_H

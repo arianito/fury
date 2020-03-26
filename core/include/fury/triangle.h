@@ -1,9 +1,4 @@
-//
-// Created by aryan on 3/20/20.
-//
-
-#ifndef GAME_TRIANGLE_H
-#define GAME_TRIANGLE_H
+#pragma once
 
 struct Triangle {
     void create() {
@@ -51,5 +46,3 @@ private:
     GLuint vao;
     GLuint ebo;
 };
-
-#endif //GAME_TRIANGLE_H

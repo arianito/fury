@@ -4,19 +4,19 @@
 
 #include "fury/memory/linear_allocator.h"
 
-LinearAllocator::LinearAllocator(size memSize, const void *mem) :
+LinearAllocator::LinearAllocator(size_t memSize, const void *mem) :
         Allocator(memSize, mem) {}
 
 LinearAllocator::~LinearAllocator() {
     this->clear();
 }
 
-void *LinearAllocator::allocate(size memSize, u8 alignment) {
+void *LinearAllocator::allocate(size_t memSize, u8 alignment) {
     assert(memSize > 0 && "allocate called with memSize = 0.");
 
     union {
         void *asVoidPtr;
-        uptr asUptr;
+        std::uintptr_t asUptr;
     };
 
     asVoidPtr = (void *) this->m_MemoryFirstAddress;

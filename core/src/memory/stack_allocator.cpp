@@ -4,19 +4,19 @@
 
 #include "fury/memory/stack_allocator.h"
 
-StackAllocator::StackAllocator(size memSize, const void *mem) :
+StackAllocator::StackAllocator(size_t memSize, const void *mem) :
         Allocator(memSize, mem) {}
 
 StackAllocator::~StackAllocator() {
     this->clear();
 }
 
-void *StackAllocator::allocate(size memSize, u8 alignment) {
+void *StackAllocator::allocate(size_t memSize, u8 alignment) {
     assert(memSize > 0 && "allocate called with memSize = 0.");
 
     union {
         void *asVoidPtr;
-        uptr asUptr;
+        std::uintptr_t asUptr;
         AllocMetaInfo *asMeta;
     };
 
@@ -50,7 +50,7 @@ void *StackAllocator::allocate(size memSize, u8 alignment) {
 void StackAllocator::free(void *mem) {
     union {
         void *asVoidPtr;
-        uptr asUptr;
+        std::uintptr_t asUptr;
         AllocMetaInfo *asMeta;
     };
 
@@ -60,7 +60,7 @@ void StackAllocator::free(void *mem) {
     asUptr -= sizeof(AllocMetaInfo);
 
     // free used memory
-    this->m_MemoryUsed -= ((uptr) this->m_MemoryFirstAddress + this->m_MemoryUsed) - ((uptr) mem + asMeta->adjustment);
+    this->m_MemoryUsed -= ((std::uintptr_t) this->m_MemoryFirstAddress + this->m_MemoryUsed) - ((std::uintptr_t) mem + asMeta->adjustment);
 
     // decrement allocation count
     this->m_MemoryAllocations--;

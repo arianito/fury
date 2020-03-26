@@ -1,10 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_MATH_H
-#define FURY_MATH_H
-
+#pragma once
 
 #include <cmath>
 #include "system.h"
@@ -106,5 +100,3 @@ struct Math {
 
     static bool lineSegmentIntersection(const Vec2 &p1, const Vec2 &p2, const Vec2 &p3, const Vec2 &p4, Vec2 &result);
 };
-
-#endif

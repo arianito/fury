@@ -1,9 +1,5 @@
-//
-// Created by aryan on 3/21/20.
-//
+#pragma once
 
-#ifndef GAME_PLANE_H
-#define GAME_PLANE_H
 
 #include "vec3.h"
 #include "ray.h"
@@ -39,14 +35,12 @@ struct Plane {
     bool raycast(const Ray &ray, float *enter);
 
 
-    [[nodiscard]] const Vec3 &normal() const;
+    const Vec3 &normal() const;
 
-    [[nodiscard]] const f32 &distance() const;
+    const f32 &distance() const;
 
 private:
     Vec3 m_Normal;
     f32 m_Distance;
 
 };
-
-#endif //GAME_PLANE_H

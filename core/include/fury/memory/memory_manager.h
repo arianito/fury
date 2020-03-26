@@ -1,11 +1,4 @@
-//
-// Created by aryan on 3/20/20.
-// borrowed from
-// https://github.com/tobias-stein/EntityComponentSystem
-//
-
-#ifndef GAME_MEMORY_MANAGER_H
-#define GAME_MEMORY_MANAGER_H
+#pragma once
 
 #include "stack_allocator.h"
 
@@ -15,7 +8,7 @@ class MemoryManager {
     friend class GlobalMemoryUser;
 
 public:
-    static constexpr size MEMORY_CAPACITY = ECS_GLOBAL_MEMORY_CAPACITY;
+    static constexpr size_t MEMORY_CAPACITY = ECS_GLOBAL_MEMORY_CAPACITY;
 
 private:
     void *m_GlobalMemory;
@@ -35,7 +28,7 @@ public:
     ~MemoryManager();
 
 
-    inline void *allocate(size memSize, const char *user = nullptr) {
+    inline void *allocate(size_t memSize, const char *user = nullptr) {
         log_info("%s allocated %d bytes of global memory.", user != nullptr ? user : "Unknown", memSize);
         void *pMemory = m_MemoryAllocator->allocate(memSize, alignof(u8));
 
@@ -74,5 +67,3 @@ public:
     void checkMemoryLeaks();
 
 };
-
-#endif
