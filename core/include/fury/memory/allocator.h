@@ -19,25 +19,26 @@ public:
 
     virtual ~Allocator();
 
-    virtual void *allocate(size_t size, u8 alignment) = 0;
+    virtual void *Allocate(size_t size, u8 alignment) = 0;
 
-    virtual void free(void *p) = 0;
+    virtual void Free(void *p) = 0;
 
-    virtual void clear() = 0;
+    virtual void Clear() = 0;
 
     static inline void *alignForward(void *address, u8 alignment) {
         return (void *) ((reinterpret_cast<std::uintptr_t>(address) + static_cast<std::uintptr_t>(alignment - 1)) &
                          static_cast<std::uintptr_t>(~(u8) (alignment - 1)));
     }
 
-    static inline u8 getAdjustment(const void *address, u8 alignment) {
-        u8 adjustment = alignment - (reinterpret_cast<std::uintptr_t>(address) & static_cast<std::uintptr_t>(alignment - 1));
+    static inline u8 GetAdjustment(const void *address, u8 alignment) {
+        u8 adjustment =
+                alignment - (reinterpret_cast<std::uintptr_t>(address) & static_cast<std::uintptr_t>(alignment - 1));
 
         return adjustment == alignment ? 0 : adjustment;
     }
 
-    static inline u8 getAdjustment(const void *address, u8 alignment, u8 extra) {
-        u8 adjustment = getAdjustment(address, alignment);
+    static inline u8 GetAdjustment(const void *address, u8 alignment, u8 extra) {
+        u8 adjustment = GetAdjustment(address, alignment);
 
         u8 neededSpace = extra;
 
@@ -52,19 +53,19 @@ public:
         return adjustment;
     }
 
-    inline size_t getMemorySize() const {
+    inline size_t GetMemorySize() const {
         return this->m_MemorySize;
     }
 
-    inline const void *getMemoryAddress0() const {
+    inline const void *GetMemoryAddress0() const {
         return this->m_MemoryFirstAddress;
     }
 
-    inline size_t getUsedMemory() const {
+    inline size_t GetUsedMemory() const {
         return this->m_MemoryUsed;
     }
 
-    inline u64 getAllocationCount() const {
+    inline u64 GetAllocationCount() const {
         return this->m_MemoryAllocations;
     }
 

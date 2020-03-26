@@ -5,16 +5,19 @@
 #include <type_traits>
 #include <limits>
 
+#define COMPONENT_LUT_GROW					1024
+
+#define COMPONENT_T_CHUNK_SIZE				512
+
 struct Component {
-    static constexpr PoolId INVALID_POOL_ID = std::numeric_limits<PoolId>::max();
     EntityId m_EntityId;
-    PoolId m_PoolId;
 public:
-    Component() : m_PoolId(INVALID_POOL_ID), m_EntityId(INVALID_ENTITY_ID) {};
+    Component() : m_EntityId(INVALID_ENTITY_ID) {};
 
     virtual ~Component() = default;
 
     virtual void Create() {};
+    virtual void Destroy() {};
 
     void SetEntityId(EntityId id) {
         m_EntityId = id;
@@ -22,14 +25,6 @@ public:
 
     const EntityId &GetEntityId() const {
         return m_EntityId;
-    }
-
-    void SetPoolId(PoolId id) {
-        m_PoolId = id;
-    }
-
-    const PoolId &GetPoolId() const {
-        return m_PoolId;
     }
 };
 

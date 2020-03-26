@@ -8,14 +8,13 @@
 
 template<class ...Comps>
 class System : public BaseSystem {
+    friend class EntityManager;
     std::map<EntityId, size_t> m_EntityIdToIndexMap;
 protected:
     EntityManager *m_EntityManager;
     using CompTuple = std::tuple<std::add_pointer_t<Comps>...>;
     std::vector<CompTuple> m_Components;
 public:
-    explicit System(EntityManager *manager) : m_EntityManager(manager) {};
-
     void OnEntityCreated(Entity *entity) override;
 
     void OnEntityDestroyed(EntityId entityId) override;

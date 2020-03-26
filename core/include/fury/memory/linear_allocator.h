@@ -9,10 +9,10 @@ public:
 
     ~LinearAllocator() override;
 
-    void *allocate(size_t size, u8 alignment) override;
+    void *Allocate(size_t size, u8 alignment) override;
 
-    void free(void *p) override;
+    void Free(void *p) override;
 
-    void clear() override;
+    void Clear() override;
 
 };

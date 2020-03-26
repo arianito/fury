@@ -5,9 +5,12 @@
 class BaseSystem {
 public:
     bool m_ShouldUpdate = false;
+
     virtual ~BaseSystem() = default;
 
     virtual void Create() {};
+
+    virtual void Destroy() {};
 
     virtual void Update() {};
 

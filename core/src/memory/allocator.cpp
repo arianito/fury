@@ -1,7 +1,3 @@
-//
-// Created by aryan on 3/20/20.
-//
-
 #include "fury/memory/allocator.h"
 
 Allocator::Allocator(const size_t memSize, const void *mem) :

@@ -26,7 +26,7 @@ public:
 
         explicit MemoryChunk(Allocator *allocator) :
                 allocator(allocator) {
-            this->chunkStart = reinterpret_cast<std::uintptr_t>(allocator->getMemoryAddress0());
+            this->chunkStart = reinterpret_cast<std::uintptr_t>(allocator->GetMemoryAddress0());
             this->chunkEnd = this->chunkStart + ALLOC_SIZE;
             this->objects.clear();
         }
@@ -92,7 +92,7 @@ public:
             m_AllocatorTag(allocatorTag) {
 
 
-        auto *allocator = new Allocator(ALLOC_SIZE, allocate(ALLOC_SIZE, allocatorTag), sizeof(OBJECT_TYPE),
+        auto *allocator = new Allocator(ALLOC_SIZE, Allocate(ALLOC_SIZE, allocatorTag), sizeof(OBJECT_TYPE),
                                         alignof(OBJECT_TYPE));
         this->m_Chunks.push_back(new MemoryChunk(allocator));
     }
@@ -106,7 +106,7 @@ public:
             chunk->objects.clear();
 
             // free allocated allocator memory
-            free((void *) chunk->allocator->GetMemoryAddress0());
+            Free((void *) chunk->allocator->GetMemoryAddress0());
             delete chunk->allocator;
             chunk->allocator = nullptr;
 
@@ -116,7 +116,7 @@ public:
         }
     }
 
-    void *createObject() {
+    void *CreateObject() {
         void *slot = nullptr;
 
         // get next free slot
@@ -139,7 +139,7 @@ public:
             // put new chunk in front
             this->m_Chunks.push_front(newChunk);
 
-            slot = newChunk->allocator->allocate(sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
+            slot = newChunk->allocator->Allocate(sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
 
             assert(slot != nullptr && "Unable to create new object. Out of memory?!");
             newChunk->objects.clear();
@@ -149,7 +149,7 @@ public:
         return slot;
     }
 
-    void destroyObject(void *object) {
+    void DestroyObject(void *object) {
         std::uintptr_t adr = reinterpret_cast<std::uintptr_t>(object);
         for (auto chunk : this->m_Chunks) {
             if (chunk->chunkStart <= adr && adr < chunk->chunkEnd) {

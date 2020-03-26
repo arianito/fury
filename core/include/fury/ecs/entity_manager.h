@@ -5,19 +5,27 @@
 #include "base_system.h"
 #include "entity.h"
 #include <vector>
+#include <unordered_map>
 #include <iostream>
 #include <cassert>
+#include <fury/memory/linear_allocator.h>
+#include <fury/memory/global_memory_user.h>
 
-struct EntityManager {
+#define ECS_SYSTEM_MEMORY_BUFFER_SIZE 8388608
+
+struct EntityManager : public GlobalMemoryUser {
 private:
     size_t m_EntityCnt = 0;
-    using SystemVector = std::vector<BaseSystem *>;
-    using EntityMap = std::map<EntityId, Entity *>;
-    using ComponentMap = std::map<ComponentId, std::vector<Component *>>;
+    using SystemAllocator    = LinearAllocator;
+    using SystemVector = std::unordered_map<SystemId, BaseSystem *>;
+    using EntityMap = std::unordered_map<EntityId, Entity *>;
+    using ComponentMap = std::unordered_map<ComponentId, std::unordered_map<EntityId, Component *>>;
 public:
     SystemVector m_Systems;
     EntityMap m_Entities;
     ComponentMap m_Components;
+
+    SystemAllocator *m_SystemAllocator;
 
     EntityManager(const EntityManager &) = delete;
 
@@ -44,19 +52,12 @@ public:
     template<class T>
     T *GetComponent(EntityId entityId) const;
 
-    template<class...Args>
-    void AddSystem();
-
-
     template<class T, class ...Args>
     T *AddComponent(EntityId entityId, Args &&... args);
 
-private:
-    template<size_t Index, class T, class...Args>
-    void AddSystem();
+    template<class T, class ...Args>
+    T *AddSystem(Args &&... args);
 
-    template<size_t Index>
-    void AddSystem();
 };
 
 template<class T>
@@ -70,35 +71,45 @@ template<class T, class... Args>
 T *EntityManager::AddComponent(EntityId entityId, Args &&... args) {
     auto entity = m_Entities.find(entityId);
     assert (entity != m_Entities.end());
-
     auto id = GetComponentTypeID<T>();
-    T *component = new T(std::forward<Args>(args)...);
     auto findIt = m_Components.find(id);
+    if (findIt != m_Components.end()) {
+        auto it = findIt->second.find(entityId);
+        if (it != findIt->second.end() && it->second != nullptr) {
+            return (T *) it->second;
+        }
+    }
+    T *component = new T(std::forward<Args>(args)...);
+    component->SetEntityId(entityId);
     if (findIt == m_Components.end()) {
-        m_Components.emplace(id, std::vector<Component*>{component});
-        component->SetEntityId(entityId);
-        component->SetPoolId(0);
+        auto mp = std::unordered_map<EntityId, Component *>();
+        mp.emplace(entityId, component);
+        m_Components[id] = mp;
     } else {
-        findIt->second.emplace_back(component);
-        component->SetEntityId(entityId);
-        component->SetPoolId(findIt->second.size() - 1);
+        findIt->second[entityId] = component;
     }
     entity->second->AddComponent<T>(component);
     return component;
 }
 
-template<size_t Index, class T, class... Args>
-void EntityManager::AddSystem() {
+
+template<class T, class... Args>
+T *EntityManager::AddSystem(Args &&... args) {
     auto id = GetSystemTypeID<T>();
-    AddSystem<Index + 1, Args...>();
-    m_Systems.emplace_back(new T(this));
-}
+    auto it = m_Systems.find(id);
+    if (it != m_Systems.end() && it->second != nullptr) {
+        return (T *) it->second;
+    }
+    T *system = nullptr;
+    void *pSystemMem = this->m_SystemAllocator->Allocate(sizeof(T), alignof(T));
+    if (pSystemMem != nullptr) {
+        ((T*)pSystemMem)->m_EntityManager = this;
+        system = new (pSystemMem)T(std::forward<Args>(args)...);
+        this->m_Systems[id] = system;
+        log_info("System \'%s\' (%d bytes) created.", typeid(T).name(), sizeof(T));
+    } else {
+        log_fatal("Unable to create system \'%s\' (%d bytes).", typeid(T).name(), sizeof(T));
+    }
+    return system;
 
-template<size_t Index>
-void EntityManager::AddSystem() {
-}
-
-template<class... Args>
-void EntityManager::AddSystem() {
-    AddSystem<0, Args...>();
 }

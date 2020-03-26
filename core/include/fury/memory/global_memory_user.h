@@ -2,12 +2,16 @@
 
 #include "memory_manager.h"
 
+extern MemoryManager* g_MemoryManager;
+
 class GlobalMemoryUser {
 private:
-    MemoryManager *ECS_MEMORY_MANAGER = nullptr;
+    MemoryManager *m_MemoryManager = nullptr;
 
 public:
-    virtual inline const void *allocate(size_t memSize, const char *user) = 0;
+    GlobalMemoryUser();
+    ~GlobalMemoryUser();
+    const void *Allocate(size_t memSize, const char *user);
 
-    virtual inline void free(void *pMem) = 0;
+    void Free(void *pMem);
 };

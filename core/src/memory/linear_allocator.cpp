@@ -1,55 +1,35 @@
-//
-// Created by aryan on 3/20/20.
-//
-
 #include "fury/memory/linear_allocator.h"
 
 LinearAllocator::LinearAllocator(size_t memSize, const void *mem) :
         Allocator(memSize, mem) {}
 
 LinearAllocator::~LinearAllocator() {
-    this->clear();
+    this->Clear();
 }
 
-void *LinearAllocator::allocate(size_t memSize, u8 alignment) {
+void *LinearAllocator::Allocate(size_t memSize, u8 alignment) {
     assert(memSize > 0 && "allocate called with memSize = 0.");
-
     union {
         void *asVoidPtr;
         std::uintptr_t asUptr;
     };
-
     asVoidPtr = (void *) this->m_MemoryFirstAddress;
-
-    // current address
     asUptr += this->m_MemoryUsed;
-
-    // get adjustment to align address
-    u8 adjustment = getAdjustment(asVoidPtr, alignment);
-
-    // check if there is enough memory available
+    u8 adjustment = GetAdjustment(asVoidPtr, alignment);
     if (this->m_MemoryUsed + memSize + adjustment > this->m_MemorySize) {
-        // not enough memory
         return nullptr;
     }
-
-    // determine aligned memory address
     asUptr += adjustment;
-
-    // update book keeping
     this->m_MemoryUsed += memSize + adjustment;
     this->m_MemoryAllocations++;
-
-    // return aligned memory address
     return asVoidPtr;
 }
 
-void LinearAllocator::free(void *mem) {
-    assert(false && "Lineaer allocators do not support free operations. Use clear instead.");
+void LinearAllocator::Free(void *mem) {
+    static_assert(true, "Lineaer allocators do not support free operations. Use clear instead.");
 }
 
-void LinearAllocator::clear() {
-    // simply reset memory
+void LinearAllocator::Clear() {
     this->m_MemoryUsed = 0;
     this->m_MemoryAllocations = 0;
 }
