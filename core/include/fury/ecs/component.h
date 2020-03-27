@@ -4,10 +4,7 @@
 #include "ecs_types.h"
 #include <type_traits>
 #include <limits>
-
-#define COMPONENT_LUT_GROW					1024
-
-#define COMPONENT_T_CHUNK_SIZE				512
+#include <iostream>
 
 struct Component {
     EntityId m_EntityId;
@@ -17,7 +14,6 @@ public:
     virtual ~Component() = default;
 
     virtual void Create() {};
-    virtual void Destroy() {};
 
     void SetEntityId(EntityId id) {
         m_EntityId = id;

@@ -22,7 +22,7 @@ private:
     Mat4 projection;
     Shader sh;
     enum {
-        e_maxVertices = 512
+        e_maxVertices = 2048
     };
     Vec2 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
@@ -55,7 +55,7 @@ private:
     Shader sh;
 
     enum {
-        e_maxVertices = 2 * 512
+        e_maxVertices = 2 * 2048
     };
     Vec2 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
@@ -86,7 +86,7 @@ private:
     Shader sh;
 
     enum {
-        e_maxVertices = 3 * 512
+        e_maxVertices = 3 * 2048
     };
     Vec2 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];

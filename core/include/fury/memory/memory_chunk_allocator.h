@@ -1,9 +1,8 @@
 #pragma once
 
-
+#include <list>
 #include "pool_allocator.h"
 #include "global_memory_user.h"
-#include <list>
 
 template<class OBJECT_TYPE, size_t T>
 class MemoryChunkAllocator : protected GlobalMemoryUser {
@@ -88,17 +87,13 @@ protected:
 
 public:
 
-    MemoryChunkAllocator(const char *allocatorTag = nullptr) :
-            m_AllocatorTag(allocatorTag) {
-
-
+    explicit MemoryChunkAllocator(const char *allocatorTag) : m_AllocatorTag(allocatorTag) {
         auto *allocator = new Allocator(ALLOC_SIZE, Allocate(ALLOC_SIZE, allocatorTag), sizeof(OBJECT_TYPE),
                                         alignof(OBJECT_TYPE));
         this->m_Chunks.push_back(new MemoryChunk(allocator));
     }
 
     ~MemoryChunkAllocator() {
-        // make sure all entities will be released!
         for (auto chunk : this->m_Chunks) {
             for (auto obj : chunk->objects)
                 ((OBJECT_TYPE *) obj)->~OBJECT_TYPE();
@@ -124,7 +119,7 @@ public:
             if (chunk->objects.size() > MAX_OBJECTS)
                 continue;
 
-            slot = chunk->allocator->allocate(sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
+            slot = chunk->allocator->Allocate(sizeof(OBJECT_TYPE), alignof(OBJECT_TYPE));
             if (slot != nullptr) {
                 chunk->objects.push_back((OBJECT_TYPE *) slot);
                 break;
@@ -154,7 +149,7 @@ public:
         for (auto chunk : this->m_Chunks) {
             if (chunk->chunkStart <= adr && adr < chunk->chunkEnd) {
                 chunk->objects.remove((OBJECT_TYPE *) object);
-                chunk->allocator->free(object);
+                chunk->allocator->Free(object);
                 return;
             }
         }

@@ -55,6 +55,10 @@ struct Vec2 : Uniform<2, 1> {
     static f32 angle(const Vec2 &from, const Vec2 &to);
 
     static f32 distance(const Vec2 &a, const Vec2 &b);
+    static const Vec2 lerp(const Vec2 &a, const Vec2 &b, const f32 &t);
+
+    static const Vec2 lerpUnclamped(const Vec2 &a, const Vec2 &b, const f32 &t);
+
 
     // operators
     friend Vec2 operator+(const Vec2 &a, const Vec2 &b);;

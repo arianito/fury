@@ -4,11 +4,6 @@
 #include "component.h"
 #include <unordered_map>
 
-#define ENTITY_LUT_GROW                        1024
-
-#define ENTITY_T_CHUNK_SIZE                    512
-
-
 struct Entity {
     using ComponentMap = std::unordered_map<ComponentId, Component *>;
     EntityId m_Id;
@@ -52,4 +47,18 @@ T *Entity::GetComponent() const {
     } else {
         return nullptr;
     }
+}
+
+namespace Internal {
+    inline EntityId GetUniqueEntityID() noexcept {
+        static EntityId lastID{0u};
+        return lastID++;
+    }
+}
+
+template<class T>
+inline EntityId GetEntityTypeID() noexcept {
+    static_assert(std::is_base_of<Component, T>::value, "T must inherit from Entity");
+    static EntityId typeID{Internal::GetUniqueEntityID()};
+    return typeID;
 }
