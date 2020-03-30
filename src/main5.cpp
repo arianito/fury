@@ -36,19 +36,22 @@ int main() {
         Mat4 proj{0};
         f32 xrot = 0;
         f32 yrot = 0;
+        Vec3 targetPos{0};
 
         Camera2d *camera = nullptr;
         ObjLoader *loader = nullptr;
         Shader *shader = nullptr;
         Texture2d *texture = nullptr;
+        u32 count = 0;
         GLuint *model = nullptr;
-        unsigned int size = 0;
+        u32 size = 0;
 
         void Create() override {
             camera = new Camera2d();
-            loader = new ObjLoader("../temp/cars.obj");
+            loader = new ObjLoader("../temp/box.obj");
             texture = new Texture2d("../temp/texture.jpg");
-            model = new GLuint[loader->m_Meshes.size()];
+            count = loader->m_Meshes.size();
+            model = new GLuint[count];
             int i = 0;
             for (auto &m: loader->m_Meshes) {
                 model[i] = prepareMesh(m);
@@ -60,20 +63,26 @@ int main() {
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
+layout (location = 2) in vec2 aCoord;
 
 out vec3 FragPos;
 out vec3 Normal;
+out vec2 Coord;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+
 void main()
 {
     FragPos = vec3(model * vec4(aPos, 1.0));
+
     Normal = mat3(transpose(inverse(model))) * aNormal;
 
-    gl_Position = projection * view * vec4(FragPos, 1.0);
+    Coord = aCoord;
+
+    gl_Position = projection * view * model * vec4(aPos, 1.0);
 }
 )", R"(
 #version 330 core
@@ -81,11 +90,14 @@ out vec4 FragColor;
 
 in vec3 Normal;
 in vec3 FragPos;
+in vec2 Coord;
 
 uniform vec3 lightPos;
 uniform vec3 viewPos;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
+
+uniform sampler2D texture0;
 
 void main()
 {
@@ -93,56 +105,82 @@ void main()
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
 
-    // diffuse
+    // diffuse 
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(lightPos - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
+    float diff = max(dot(Normal, lightDir), 0.0);
     vec3 diffuse = diff * lightColor;
 
     // specular
-    float specularStrength = 0.5;
+    float specularStrength = 0.8;
     vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 reflectDir = reflect(-lightDir, norm);  
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-    vec3 specular = specularStrength * spec * lightColor;
+    vec3 specular = specularStrength * spec * lightColor;  
 
-    vec3 result = (ambient + diffuse + specular) * objectColor;
-    FragColor = vec4(result, 1.0);
+    vec3 result = (ambient + specular) * objectColor * (floor(distance(viewPos, FragPos)) / 20.0f);
+    FragColor = vec4(result, 1) * texture(texture0, Coord);
 }
 )");
         }
 
         void Update() override {
-            camera->Update();
-            DebugDraw::SetCamera(camera->GetView(), camera->GetProjection());
+            camera->Update();   
         }
 
         void Render() override {
+            xrot += Input::GetAxis(AXIS_MOUSE_X) * Time::DeltaTime * 1;
+            yrot += Input::GetAxis(AXIS_MOUSE_Y) * Time::DeltaTime * 1;
+            yrot = Math::clamp(yrot, -Math::HALF_PI+0.01f, Math::HALF_PI-0.01f);
+            auto cameraPos = targetPos + Quaternion::fromEulerAngles(xrot, 0.0f, yrot) * (6.0f * Vec3::back);
 
-            xrot -= Input::GetAxis(AXIS_HORIZONTAL) * Time::DeltaTime * 4;
-            yrot -= Input::GetAxis(AXIS_VERTICAL) * Time::DeltaTime * 4;
+            auto plane = Plane(Vec3::up, targetPos);
+            auto cameraProject = plane.closestPointOnPlane(cameraPos);
 
-            Vec3 pos = Quaternion::fromEulerAngles(xrot, 0.0f, yrot) * (10.0f * Vec3::forward);
-            view = Mat4::lookAt(pos, Vec3::zero, Vec3::up);
-            proj = Mat4::perspective(45 * Math::DEG2RAD, Display::GetRatio(), 0.1f, 100.0f);
 
+            auto norm = (targetPos - cameraPos).normal();
+            targetPos = targetPos + norm * Input::GetAxis(AXIS_VERTICAL) * Time::DeltaTime * 8 + Vec3::cross(norm, Vec3::up).normal() * Input::GetAxis(AXIS_HORIZONTAL) * Time::DeltaTime * 8;
+
+            view = Mat4::lookAt(cameraPos, targetPos, Vec3::up);
+            proj = Mat4::perspective(75 * Math::DEG2RAD, Display::GetRatio(), 0.01f, 100.0f);
+
+            DebugDraw::SetCamera(view, proj);
             shader->Begin();
 
-            shader->SetParameter("lightPos", pos);
-            shader->SetParameter("viewPos", pos);
+            shader->SetParameter("lightPos", Vec3(0, 0, 0));
+            shader->SetParameter("viewPos", cameraPos);
             shader->SetParameter("lightColor", Vec3(1, 1, 1));
-            shader->SetParameter("objectColor", Vec3(1.0f, 0.5f, 0.31f));
+            shader->SetParameter("objectColor", Vec3(1.0f, 1.0f, 1.0f));
 
             shader->SetParameter("projection", proj);
             shader->SetParameter("view", view);
-            shader->SetParameter("model", Mat4::createTranslation(Vec3(0, 0, 0)));
+            texture->Begin();
 
-            for (int i = 0; i < 5; i++) {
-                glBindVertexArray(model[i]);
-                glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
+            int mx = 10;
+            float sz = 5.0;
+
+            float a = 5;
+
+
+            auto x0 = Math::floor(cameraPos.x() / a) * a;
+            auto y0 = Math::floor(cameraPos.y() / a) * a;
+            auto z0 = Math::floor(cameraPos.z() / a) * a;
+
+            for(int i = -mx; i < mx; i++) {
+                for(int j = -mx; j < mx; j++) {
+                    for(int k = -mx; k < mx; k++) {
+                        shader->SetParameter("model", Mat4::createTranslation(Vec3(x0 + i*sz, y0 + k*sz, z0 + j*sz)));
+                        for (int i = 0; i < count; i++) {
+                            glBindVertexArray(model[i]);
+                            glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
+                        }
+                    }
+                }
             }
-
+            texture->End();
             shader->End();
+
+            DebugDraw::Pivot(Vec3::zero);
 
 
         }

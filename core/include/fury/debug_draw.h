@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vec2.h"
+#include "vec3.h"
 #include "color.h"
 #include "shader.h"
 
@@ -15,7 +15,7 @@ struct GLRenderPoints {
 
     void dispose();
 
-    void vertex(const Vec2 &v, const Color &c, f32 size);
+    void vertex(const Vec3 &v, const Color &c, f32 size);
 
 private:
     Mat4 view;
@@ -24,7 +24,7 @@ private:
     enum {
         e_maxVertices = 2048
     };
-    Vec2 m_vertices[e_maxVertices];
+    Vec3 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
     float m_sizes[e_maxVertices];
 
@@ -47,7 +47,7 @@ struct GLRenderLines {
 
     void dispose();
 
-    void vertex(const Vec2 &v, const Color &c);
+    void vertex(const Vec3 &v, const Color &c);
 
 private:
     Mat4 view;
@@ -57,7 +57,7 @@ private:
     enum {
         e_maxVertices = 2 * 2048
     };
-    Vec2 m_vertices[e_maxVertices];
+    Vec3 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
 
     i32 m_count;
@@ -78,7 +78,7 @@ struct GLRenderTriangles {
 
     void dispose();
 
-    void vertex(const Vec2 &v, const Color &c);
+    void vertex(const Vec3 &v, const Color &c);
 
 private:
     Mat4 view;
@@ -88,7 +88,7 @@ private:
     enum {
         e_maxVertices = 3 * 2048
     };
-    Vec2 m_vertices[e_maxVertices];
+    Vec3 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
 
     i32 m_count;
@@ -110,19 +110,19 @@ public:
 
     static void SetCamera(const Mat4 &v, const Mat4 &p);
 
-    static void Segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
+    static void Segment(const Vec3 &p1, const Vec3 &p2, const Color &color);
 
-    static void Polygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    static void Polygon(const Vec3 *vertices, u32 vertexCount, const Color &color);
 
-    static void SolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    static void SolidPolygon(const Vec3 *vertices, u32 vertexCount, const Color &color);
 
-    static void Circle(const Vec2 &center, float radius, const Color &color);
+    static void Circle(const Vec3 &center, float radius, const Color &color);
 
-    static void SolidCircle(const Vec2 &center, float radius, const Color &color);
+    static void SolidCircle(const Vec3 &center, float radius, const Color &color);
 
-    static void Point(const Vec2 &p, float size, const Color &color);
+    static void Point(const Vec3 &p, float size, const Color &color);
 
-    static void Pivot(const Vec2 &p);
+    static void Pivot(const Vec3 &p);
 
 private:
     static GLRenderPoints *m_Points;
