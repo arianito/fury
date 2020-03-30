@@ -28,6 +28,9 @@ struct EntityManager : public GlobalMemoryUser {
         virtual const char *GetComponentContainerTypeName() const = 0;
 
         virtual void DestroyComponent(Component *object) = 0;
+
+        virtual size_t GetUsedMemory() = 0;
+        virtual size_t GetMemorySize() = 0;
     };
 
     template<class T>
@@ -54,6 +57,23 @@ struct EntityManager : public GlobalMemoryUser {
             object->~Component();
             this->DestroyObject(object);
         }
+
+        size_t GetUsedMemory() override {
+
+            auto b = 0;
+            for (auto chunk : this->m_Chunks) {
+                b += chunk->allocator->GetUsedMemory();
+            }
+            return b;
+
+        }
+        size_t GetMemorySize() override {
+            auto b = 0;
+            for (auto chunk : this->m_Chunks) {
+                b += chunk->allocator->GetMemorySize();
+            }
+            return b;
+        }
     };
 
     class IEntityContainer {
@@ -64,6 +84,8 @@ struct EntityManager : public GlobalMemoryUser {
         virtual const char *GetEntityContainerTypeName() const = 0;
 
         virtual void DestroyEntity(Entity *object) = 0;
+        virtual size_t GetUsedMemory() = 0;
+        virtual size_t GetMemorySize() = 0;
 
     };
 
@@ -90,6 +112,22 @@ struct EntityManager : public GlobalMemoryUser {
             this->DestroyObject(object);
         }
 
+        size_t GetUsedMemory() override {
+
+            auto b = 0;
+            for (auto chunk : this->m_Chunks) {
+                b += chunk->allocator->GetUsedMemory();
+            }
+            return b;
+
+        }
+        size_t GetMemorySize() override {
+            auto b = 0;
+            for (auto chunk : this->m_Chunks) {
+                b += chunk->allocator->GetMemorySize();
+            }
+            return b;
+        }
     };
 
 private:

@@ -19,7 +19,7 @@ struct Camera2d {
 private:
     Mat4 m_View = Mat4::identify;
     Mat4 m_Projection = Mat4::identify;
-    f32 m_Horizon = 5.0f;
+    f32 m_Horizon = 15.0f;
     Vec2 m_Position{0, 0};
     f32 m_Zoom = 1;
     bool m_Dirty = true;

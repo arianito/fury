@@ -30,6 +30,12 @@
 #include "ray.h"
 #include "plane.h"
 
+#include "vertex.h"
+#include "material.h"
+#include "mesh.h"
+#include "obj_loader.h"
+#include "texture2d.h"
+
 #include "ecs/entity_manager.h"
 #include "ecs/component.h"
 #include "ecs/entity.h"

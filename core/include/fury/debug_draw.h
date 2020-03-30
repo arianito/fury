@@ -20,7 +20,7 @@ struct GLRenderPoints {
 private:
     Mat4 view;
     Mat4 projection;
-    Shader sh;
+    Shader *sh;
     enum {
         e_maxVertices = 2048
     };
@@ -52,7 +52,7 @@ struct GLRenderLines {
 private:
     Mat4 view;
     Mat4 projection;
-    Shader sh;
+    Shader *sh;
 
     enum {
         e_maxVertices = 2 * 2048
@@ -83,7 +83,7 @@ struct GLRenderTriangles {
 private:
     Mat4 view;
     Mat4 projection;
-    Shader sh;
+    Shader *sh;
 
     enum {
         e_maxVertices = 3 * 2048

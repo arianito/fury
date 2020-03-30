@@ -59,6 +59,8 @@ struct Vec3 : Uniform<3, 1> {
     Vec3 cross(const Vec3 &a) const;
 
 
+    static const bool equals(const Vec3 &a, const Vec3 &b);
+
     static const f32 dot(const Vec3 &a, const Vec3 &b);
 
     static const f32 magnitude(const Vec3 &a);
@@ -98,20 +100,24 @@ struct Vec3 : Uniform<3, 1> {
     static const Vec3 max(const Vec3 &lhs, const Vec3 &rhs);
 
 
-    friend Vec3 operator+(const Vec3 &a, const Vec3 &b);;
+    friend Vec3 operator+(const Vec3 &a, const Vec3 &b);
 
-    friend Vec3 operator-(const Vec3 &a);;
+    friend Vec3 operator-(const Vec3 &a);
 
 
-    friend Vec3 operator-(const Vec3 &a, const Vec3 &b);;
+    friend Vec3 operator-(const Vec3 &a, const Vec3 &b);
 
-    friend Vec3 operator*(const Vec3 &a, const Vec3 &b);;
+    friend Vec3 operator*(const Vec3 &a, const Vec3 &b);
 
-    friend Vec3 operator*(const Vec3 &a, const f32 &b);;
+    friend Vec3 operator*(const Vec3 &a, const f32 &b);
 
-    friend Vec3 operator*(const f32 &b, const Vec3 &a);;
+    friend Vec3 operator*(const f32 &b, const Vec3 &a);
 
-    friend Vec3 operator/(const Vec3 &a, const f32 &b);;
+    friend Vec3 operator/(const Vec3 &a, const f32 &b);
+
+    friend bool operator==(const Vec3 &a, const Vec3 &b);
+
+    friend bool operator!=(const Vec3 &a, const Vec3 &b);
 
 
 };

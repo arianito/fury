@@ -96,7 +96,7 @@ i32 Window::run() {
     glfwMakeContextCurrent(window);
     glfwSetWindowPos(window, 200, 200);
 
-    glfwSwapInterval(0);
+    glfwSwapInterval(1);
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         log_fatal("game: Failed to initialize OpenGL context");
@@ -149,12 +149,13 @@ i32 Window::run() {
         }
         this->Update();
 
-        glClearColor(0.1, 0.2, 0.3, 1);
+        glClearColor(0.1, 0.2, 0.3, 0.1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glBlendEquation(GL_ADD);
 
         this->Render();
 

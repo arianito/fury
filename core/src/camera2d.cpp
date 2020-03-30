@@ -75,7 +75,7 @@ void Camera2d::SetZoom(f32 zoom) {
 void Camera2d::UpdateMatrices() {
     f32 height = m_Horizon / Display::GetRatio();
     m_Projection = Mat4::orthographic(height / 2, m_Horizon / 2, -height / 2, -m_Horizon / 2, -100, 100);
-    m_View = Mat4::createTranslation(Vec3{m_Position.x(), m_Position.y(), 0} * m_Zoom) *
+    m_View = Mat4::createTranslation(Vec3{m_Position.x() * m_Zoom, m_Position.y() * m_Zoom, 10}) *
              Mat4::createScale(Vec3(m_Zoom));
 }
 

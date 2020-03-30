@@ -21,12 +21,12 @@ public:
 
     ~Entity() = default;
 
-    EntityId GetId() const;
+    inline const EntityId GetId() const { return m_Id; }
 
     template<class T>
     void AddComponent(T *pComponent);
 
-    const ComponentMap &GetComponents() const;
+    inline const ComponentMap &GetComponents() const { return m_Components; }
 
     template<class T>
     T *GetComponent() const;

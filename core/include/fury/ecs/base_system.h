@@ -14,6 +14,8 @@ public:
 
     virtual void Update() {};
 
+    virtual void FixedUpdate() {};
+
     virtual void OnEntityCreated(Entity *entity) = 0;
 
     virtual void OnEntityDestroyed(EntityId entityId) = 0;

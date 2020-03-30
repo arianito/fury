@@ -5,7 +5,7 @@
 #include "fury/debug_draw.h"
 
 void GLRenderPoints::create() {
-    sh.FromSource(R"(
+    sh = new Shader(R"(
 #version 330 core
 
 uniform mat4 projection;
@@ -32,7 +32,6 @@ void main(void)
   color = f_color;
 }
 )");
-    sh.Create();
 
     m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -77,6 +76,7 @@ void GLRenderPoints::dispose() {
         glDeleteProgram(m_programId);
         m_programId = 0;
     }
+    sh->~Shader();
 }
 
 void GLRenderPoints::vertex(const Vec2 &v, const Color &c, f32 size) {
@@ -94,10 +94,10 @@ void GLRenderPoints::render() {
     if (m_count == 0)
         return;
 
-    sh.Begin();
+    sh->Begin();
 
-    sh.SetParameter("projection", projection);
-    sh.SetParameter("view", view);
+    sh->SetParameter("projection", projection);
+    sh->SetParameter("view", view);
 
     glBindVertexArray(m_vaoId);
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
@@ -118,7 +118,7 @@ void GLRenderPoints::render() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    sh.End();
+    sh->End();
 
     m_count = 0;
 }
@@ -130,7 +130,7 @@ void GLRenderPoints::update(const Mat4 &v, const Mat4 &p) {
 
 
 void GLRenderLines::create() {
-    sh.FromSource(R"(
+    sh = new Shader(R"(
 #version 330 core
 
 uniform mat4 projection;
@@ -155,8 +155,6 @@ void main(void)
   color = f_color;
 }
 )");
-    sh.Create();
-
     m_vertexAttribute = 0;
     m_colorAttribute = 1;
 
@@ -195,6 +193,7 @@ void GLRenderLines::dispose() {
         glDeleteProgram(m_programId);
         m_programId = 0;
     }
+    sh->~Shader();
 }
 
 void GLRenderLines::vertex(const Vec2 &v, const Color &c) {
@@ -212,12 +211,12 @@ void GLRenderLines::render() {
         return;
 
 
-    sh.Begin();
+    sh->Begin();
 
-    sh.SetParameter("projection", projection);
-    sh.SetParameter("view", view);
+    sh->SetParameter("projection", projection);
+    sh->SetParameter("view", view);
 
-    glLineWidth(1);
+    glLineWidth(2);
     glBindVertexArray(m_vaoId);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
@@ -231,7 +230,7 @@ void GLRenderLines::render() {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
-    sh.End();
+    sh->End();
 
     m_count = 0;
 }
@@ -243,7 +242,7 @@ void GLRenderLines::update(const Mat4 &v, const Mat4 &p) {
 
 
 void GLRenderTriangles::create() {
-    sh.FromSource(R"(
+    sh = new Shader(R"(
 #version 330 core
 
 uniform mat4 projection;
@@ -268,7 +267,6 @@ void main(void)
   color = f_color;
 }
 )");
-    sh.Create();
 
     m_vertexAttribute = 0;
     m_colorAttribute = 1;
@@ -276,7 +274,7 @@ void main(void)
     // Generate
     glGenVertexArrays(1, &m_vaoId);
     glGenBuffers(2, m_vboIds);
-
+    glLineWidth(2);
     glBindVertexArray(m_vaoId);
     glEnableVertexAttribArray(m_vertexAttribute);
     glEnableVertexAttribArray(m_colorAttribute);
@@ -307,6 +305,7 @@ void GLRenderTriangles::dispose() {
         glDeleteProgram(m_programId);
         m_programId = 0;
     }
+    sh->~Shader();
 }
 
 void GLRenderTriangles::vertex(const Vec2 &v, const Color &c) {
@@ -324,12 +323,13 @@ void GLRenderTriangles::render() {
         return;
 
 
-    sh.Begin();
+    sh->Begin();
 
-    sh.SetParameter("projection", projection);
-    sh.SetParameter("view", view);
+    sh->SetParameter("projection", projection);
+    sh->SetParameter("view", view);
     glBindVertexArray(m_vaoId);
 
+    glLineWidth(2);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec2), m_vertices);
 
@@ -341,7 +341,7 @@ void GLRenderTriangles::render() {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    sh.End();
+    sh->End();
     m_count = 0;
 }
 

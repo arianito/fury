@@ -37,12 +37,12 @@ struct MovementSystem : public System<Transform> {
         for (auto &compTuple: m_Components) {
             Transform *p_transform = std::get<Transform *>(compTuple);
             p_transform->m_Rotation = Math::lerp(p_transform->m_Rotation, p_transform->m_Rotation - horizontal,
-                                                 Time::DeltaTime * 4);
+                                                 Time::DeltaTime);
             auto angle = p_transform->m_Rotation;
             p_transform->m_Position = Vec2::lerp(p_transform->m_Position, p_transform->m_Position +
                                                                           Vec2(Math::cos(angle), Math::sin(angle)) *
                                                                           vertical,
-                                                 Time::DeltaTime * 2);
+                                                 Time::DeltaTime);
         }
     }
 };
@@ -52,8 +52,9 @@ struct ProjectileSystem : public System<Projectile> {
         for (auto &compTuple: m_Components) {
             Projectile *p_projectile = std::get<Projectile *>(compTuple);
 
+            auto angle = Vec2(Math::cos(p_projectile->m_Rotation), Math::sin(p_projectile->m_Rotation));
             p_projectile->m_Position = p_projectile->m_Position +
-                                       Vec2(Math::cos(p_projectile->m_Rotation), Math::sin(p_projectile->m_Rotation)) *
+                                       angle *
                                        p_projectile->m_Speed *
                                        Time::DeltaTime;
 
@@ -61,7 +62,11 @@ struct ProjectileSystem : public System<Projectile> {
             if (d > 10) {
                 m_EntityManager->DestroyEntity(p_projectile->GetEntityId());
             }
-            DebugDraw::SolidCircle(p_projectile->m_Position, 0.02f, Color(0, 1, 1, 1.0f - (d / 10.0f)));
+
+            DebugDraw::Segment(
+                    p_projectile->m_Position,
+                    p_projectile->m_Position + angle * 0.05f,
+                    Color::red);
         }
     }
 };
@@ -71,13 +76,13 @@ struct ShooterSystem : public System<Player, Transform> {
 
     void Update() override {
         auto down = Input::KeyPress(KEY_SPACE);
-        if (down && Time::ElapsedTime - last > 0.1f) {
+        if (down && Time::ElapsedTime - last > 0.05f) {
             for (auto &compTuple: m_Components) {
                 Player *p_player = std::get<Player *>(compTuple);
                 Transform *p_transform = std::get<Transform *>(compTuple);
                 auto manager = m_EntityManager;
                 auto entityId = manager->CreateEntity();
-                manager->AddComponent<Projectile>(entityId, p_transform->m_Position, p_transform->m_Rotation, 10);
+                manager->AddComponent<Projectile>(entityId, p_transform->m_Position, p_transform->m_Rotation, 20.0f);
             }
             last = Time::ElapsedTime;
         }
@@ -124,6 +129,21 @@ int main() {
             bool open = true;
             ImGui::Begin("Hello", &open);
             ImGui::Text("framerate: %f", 1.0f / Time::DeltaTime);
+            ImGui::Text("System: %zu / %zu", manager.m_SystemAllocator->GetUsedMemory(),
+                        manager.m_SystemAllocator->GetMemorySize());
+            ImGui::Text("%s: %zu / %zu",
+                        manager.m_EntityContainer->GetEntityContainerTypeName(),
+                        manager.m_EntityContainer->GetUsedMemory(),
+                        manager.m_EntityContainer->GetMemorySize());
+            for (auto &a: manager.m_ComponentContainerRegistry) {
+                auto b = a.second;
+
+                ImGui::Text("%s: %zu / %zu",
+                            b->GetComponentContainerTypeName(),
+                            b->GetUsedMemory(),
+                            b->GetMemorySize());
+
+            }
             ImGui::End();
         }
 

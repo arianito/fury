@@ -2,15 +2,14 @@
 
 #include "stack_allocator.h"
 
-#define ECS_GLOBAL_MEMORY_CAPACITY 134217728 // 128 MB
+#define GLOBAL_MEMORY_CAPACITY 134217728 // 128 MB
 
 class MemoryManager {
     friend class GlobalMemoryUser;
 
 public:
-    static constexpr size_t MEMORY_CAPACITY = ECS_GLOBAL_MEMORY_CAPACITY;
+    static constexpr size_t MEMORY_CAPACITY = GLOBAL_MEMORY_CAPACITY;
 
-private:
     void *m_GlobalMemory;
     StackAllocator *m_MemoryAllocator;
     std::vector<std::pair<const char *, void *>> m_PendingMemory;

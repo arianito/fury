@@ -15,18 +15,12 @@
 #include "color.h"
 
 struct Shader {
-
-    void FromFile(const std::string &vs, const std::string &fs);
-    void FromSource(const std::string &vs, const std::string &fs);
-
+    Shader(const std::string &vs, const std::string &fs, bool fromFile = false);
     ~Shader();
-    void Create();
+
     void Begin();
+
     void End();
-
-
-    GLuint GetProgramID();
-
 
     void SetParameter(const char *name, const i32 &a);
 
@@ -48,6 +42,4 @@ struct Shader {
 
 private:
     GLuint m_ProgramId;
-    std::string m_VSSource;
-    std::string m_FSSource;
 };

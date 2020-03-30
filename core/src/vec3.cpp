@@ -224,6 +224,10 @@ const Vec3 Vec3::max(const Vec3 &lhs, const Vec3 &rhs) {
 
 }
 
+const bool Vec3::equals(const Vec3 &a, const Vec3 &b) {
+    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+}
+
 Vec3 operator/(const Vec3 &a, const f32 &b) {
     return Vec3{a[0] / b, a[1] / b, a[2] / b};
 }
@@ -250,4 +254,11 @@ Vec3 operator-(const Vec3 &a) {
 
 Vec3 operator+(const Vec3 &a, const Vec3 &b) {
     return Vec3{a[0] + b[0], a[1] + b[1], a[2] + b[2]};
+}
+
+bool operator==(const Vec3 &a, const Vec3 &b) {
+    return Vec3::equals(a, b);
+}
+bool operator!=(const Vec3 &a, const Vec3 &b) {
+    return !Vec3::equals(a, b);
 }

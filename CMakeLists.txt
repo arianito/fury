@@ -22,7 +22,8 @@ file(
 
 include_directories(ext/glad/include)
 include_directories(ext/imgui/include)
+include_directories(ext/stb/include)
 include_directories(core/include)
 set(name app)
-add_executable(app ${SOURCES} src/main4.cpp)
+add_executable(app ${SOURCES} src/main5.cpp)
 target_link_libraries(app glfw)
