@@ -35,8 +35,8 @@ void Input::Update() {
     MoveAxis(AXIS_VERTICAL, KeyPress(KEY_DOWN) || KeyPress(KEY_S), KeyPress(KEY_UP) || KeyPress(KEY_W));
 
     glfwGetCursorPos(m_Window, &m_XPos, &m_YPos);
-    m_Axises[AXIS_MOUSE_Y] = Math::smoothDamp(m_Axises[AXIS_MOUSE_Y], m_oldYPos - m_YPos, m_AxisVelocities[AXIS_MOUSE_Y], 0.2f, 40, Time::DeltaTime);
-    m_Axises[AXIS_MOUSE_X] = Math::smoothDamp(m_Axises[AXIS_MOUSE_X], m_XPos - m_oldXPos, m_AxisVelocities[AXIS_MOUSE_X], 0.2f, 40, Time::DeltaTime);
+    m_Axises[AXIS_MOUSE_Y] = (f32)(m_oldYPos - m_YPos);
+    m_Axises[AXIS_MOUSE_X] = (f32)(m_XPos - m_oldXPos);
     m_oldXPos = m_XPos;
     m_oldYPos = m_YPos;
 }
