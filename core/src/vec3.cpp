@@ -136,7 +136,8 @@ const Vec3 Vec3::moveTowards(const Vec3 &current, const Vec3 &target, const f32 
     return current + toVector / dist * maxDistanceDelta;
 }
 
-const Vec3 Vec3::smoothDamp(const Vec3 &current, const Vec3 &target, Vec3 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime) {
+const Vec3 Vec3::smoothDamp(const Vec3 &current, const Vec3 &target, Vec3 &currentVelocity, const f32 &smoothTime,
+                            const f32 &maxSpeed, const f32 &deltaTime) {
 
     auto smoothTime0 = Math::max(0.0001F, smoothTime);
     f32 omega = 2.0F / smoothTime0;
@@ -223,6 +224,10 @@ const Vec3 Vec3::max(const Vec3 &lhs, const Vec3 &rhs) {
 
 }
 
+const bool Vec3::equals(const Vec3 &a, const Vec3 &b) {
+    return a[0] == b[0] && a[1] == b[1] && a[2] == b[2];
+}
+
 Vec3 operator/(const Vec3 &a, const f32 &b) {
     return Vec3{a[0] / b, a[1] / b, a[2] / b};
 }
@@ -249,4 +254,11 @@ Vec3 operator-(const Vec3 &a) {
 
 Vec3 operator+(const Vec3 &a, const Vec3 &b) {
     return Vec3{a[0] + b[0], a[1] + b[1], a[2] + b[2]};
+}
+
+bool operator==(const Vec3 &a, const Vec3 &b) {
+    return Vec3::equals(a, b);
+}
+bool operator!=(const Vec3 &a, const Vec3 &b) {
+    return !Vec3::equals(a, b);
 }

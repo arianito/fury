@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_QUATERNION_H
-#define FURY_PRIMITIVES_QUATERNION_H
+#pragma once
 
 #include "system.h"
 #include "uniform.h"
@@ -59,8 +54,4 @@ struct Quaternion : Uniform<4, 1> {
         };
     };
 
-
 };
-
-
-#endif //GAME_QUAT_H

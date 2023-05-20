@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_COLOR_H
-#define FURY_PRIMITIVES_COLOR_H
+#pragma once
 
 #include "system.h"
 #include "uniform.h"
@@ -49,5 +44,3 @@ struct Color : Uniform<4, 1> {
     static const Color black;
     static const Color yellow;
 };
-
-#endif //GAME_COLOR_H

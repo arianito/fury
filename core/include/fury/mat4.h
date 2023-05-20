@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_MAT4_H
-#define FURY_PRIMITIVES_MAT4_H
+#pragma once
 
 #include "system.h"
 #include "uniform.h"
@@ -42,9 +37,9 @@ struct Mat4 : Uniform<4, 4> {
 
     explicit Mat4(const Uniform &&a) noexcept : Uniform{a} {}
 
-    [[nodiscard]] f32 determinant() const;
+    f32 determinant() const;
 
-    [[nodiscard]] Mat4 invert() const;
+    Mat4 invert() const;
 
     static Mat4 invert(const Mat4 &a);
 
@@ -85,6 +80,3 @@ struct Mat4 : Uniform<4, 4> {
     friend Mat4 operator/(const Mat4 &a, const f32 &b);
 
 };
-
-
-#endif //GAME_MAT4_H

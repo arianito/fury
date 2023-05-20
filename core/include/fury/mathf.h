@@ -1,10 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_MATH_H
-#define FURY_MATH_H
-
+#pragma once
 
 #include <cmath>
 #include "system.h"
@@ -34,6 +28,8 @@ struct Math {
     static f32 cos(const f32 &of);
 
     static f32 tan(const f32 &of);
+
+    static f32 ramp(const f32 &of);
 
     static f32 arcCos(const f32 &of);
 
@@ -93,13 +89,14 @@ struct Math {
 
     static const f32 deltaAngle(const f32 &current, const f32 &target);
 
-    static f32 smoothDamp(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime);
+    static f32
+    smoothDamp(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed,
+               const f32 &deltaTime);
 
-    static f32 smoothDampAngle(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime, const f32 &maxSpeed, const f32 &deltaTime);
+    static f32 smoothDampAngle(const f32 &current, const f32 &target, f32 &currentVelocity, const f32 &smoothTime,
+                               const f32 &maxSpeed, const f32 &deltaTime);
 
     static bool lineIntersection(const Vec2 &p1, const Vec2 &p2, const Vec2 &p3, const Vec2 &p4, Vec2 &result);
 
     static bool lineSegmentIntersection(const Vec2 &p1, const Vec2 &p2, const Vec2 &p3, const Vec2 &p4, Vec2 &result);
 };
-
-#endif

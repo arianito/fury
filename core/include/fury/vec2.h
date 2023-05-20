@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_VEC2_H
-#define FURY_PRIMITIVES_VEC2_H
+#pragma once
 
 #include "uniform.h"
 
@@ -26,30 +21,44 @@ struct Vec2 : Uniform<2, 1> {
 
     f32 &x();
 
-    [[nodiscard]] f32 x() const;
+    f32 x() const;
 
     f32 &y();
 
-    [[nodiscard]] f32 y() const;
+    f32 y() const;
 
 
-    [[nodiscard]] f32 dot(const Vec2 &a) const;
-    [[nodiscard]] f32 magnitude() const;
-    [[nodiscard]] f32 sqrMagnitude() const;
-    [[nodiscard]] Vec2 normal() const;
-    [[nodiscard]] Vec2 perpendicularClockwise() const;
-    [[nodiscard]] Vec2 perpendicularCounterClockwise() const;
+    f32 dot(const Vec2 &a) const;
+
+    f32 magnitude() const;
+
+    f32 sqrMagnitude() const;
+
+    Vec2 normal() const;
+
+    Vec2 perpendicularClockwise() const;
+
+    Vec2 perpendicularCounterClockwise() const;
 
 
     void set(f32 x, f32 y);
 
 
-    static f32 dot(const Vec2& a, const Vec2& b);
-    static f32 magnitude(const Vec2& a);
-    static f32 sqrMagnitude(const Vec2& a);
-    static Vec2 normalize(const Vec2& a);
+    static f32 dot(const Vec2 &a, const Vec2 &b);
+
+    static f32 magnitude(const Vec2 &a);
+
+    static f32 sqrMagnitude(const Vec2 &a);
+
+    static Vec2 normalize(const Vec2 &a);
+
     static f32 angle(const Vec2 &from, const Vec2 &to);
+
     static f32 distance(const Vec2 &a, const Vec2 &b);
+    static const Vec2 lerp(const Vec2 &a, const Vec2 &b, const f32 &t);
+
+    static const Vec2 lerpUnclamped(const Vec2 &a, const Vec2 &b, const f32 &t);
+
 
     // operators
     friend Vec2 operator+(const Vec2 &a, const Vec2 &b);;
@@ -67,6 +76,3 @@ struct Vec2 : Uniform<2, 1> {
     friend Vec2 operator/(const Vec2 &a, const f32 &b);;
 
 };
-
-
-#endif //GAME_VEC2_H

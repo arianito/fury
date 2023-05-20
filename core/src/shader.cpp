@@ -4,21 +4,62 @@
 
 #include "fury/shader.h"
 
-void Shader::fromFile(const String &vs, const String &fs) {
-    vscode = File::read(vs);
-    fscode = File::read(fs);
+Shader::~Shader() { glDeleteProgram(m_ProgramId); }
+
+void Shader::Begin() { glUseProgram(m_ProgramId); }
+
+void Shader::End() { glUseProgram(0); }
+
+void Shader::SetParameter(const char *name, const u32 &a) {
+    glUniform1ui(glGetUniformLocation(m_ProgramId, name), a);
 }
 
-void Shader::fromSource(const String &vs, const String &fs) {
-    vscode = vs;
-    fscode = fs;
+void Shader::SetParameter(const char *name, const i32 &a) {
+    glUniform1i(glGetUniformLocation(m_ProgramId, name), a);
 }
 
-void Shader::create() {
+void Shader::SetParameter(const char *name, const Color &a) {
+    glUniform4fv(glGetUniformLocation(m_ProgramId, name), 1, a.data);
+}
+
+void Shader::SetParameter(const char *name, const Vec4 &a) {
+    glUniform4fv(glGetUniformLocation(m_ProgramId, name), 1, a.data);
+}
+
+void Shader::SetParameter(const char *name, const Vec3 &a) {
+    glUniform3fv(glGetUniformLocation(m_ProgramId, name), 1, a.data);
+}
+
+void Shader::SetParameter(const char *name, const Vec2 &a) {
+    glUniform2fv(glGetUniformLocation(m_ProgramId, name), 1, a.data);
+}
+
+void Shader::SetParameter(const char *name, const Mat4 &a) {
+    glUniformMatrix4fv(glGetUniformLocation(m_ProgramId, name), 1, GL_TRUE, a.data);
+}
+
+void Shader::SetParameter(const char *name, const f64 &a) {
+    glUniform1f(glGetUniformLocation(m_ProgramId, name), (f32) a);
+}
+
+void Shader::SetParameter(const char *name, const f32 &a) {
+    glUniform1f(glGetUniformLocation(m_ProgramId, name), a);
+}
+
+Shader::Shader(const std::string &vs, const std::string &fs, bool fromFile) {
+    std::string m_VSSource, m_FSSource;
+    if (fromFile) {
+        m_VSSource = File::read(vs);
+        m_FSSource = File::read(fs);
+    } else {
+        m_VSSource = vs;
+        m_FSSource = fs;
+    }
+
     GLint status = GL_TRUE;
     char error_msg[1024];
     GLsizei read;
-    char const *vspointer = vscode.c_str();
+    char const *vspointer = m_VSSource.c_str();
     auto vsp = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vsp, 1, &vspointer, nullptr);
     glCompileShader(vsp);
@@ -27,7 +68,7 @@ void Shader::create() {
         glGetShaderInfoLog(vsp, 1024, &read, error_msg);
         log_fatal("compile error:", error_msg);
     }
-    char const *fspointer = fscode.c_str();
+    char const *fspointer = m_FSSource.c_str();
     auto fsp = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fsp, 1, &fspointer, nullptr);
     glCompileShader(fsp);
@@ -36,61 +77,17 @@ void Shader::create() {
         glGetShaderInfoLog(fsp, 1024, &read, error_msg);
         log_fatal("compile error:", error_msg);
     }
-    program = glCreateProgram();
-    glAttachShader(program, vsp);
-    glAttachShader(program, fsp);
-    glLinkProgram(program);
-    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    m_ProgramId = glCreateProgram();
+    glAttachShader(m_ProgramId, vsp);
+    glAttachShader(m_ProgramId, fsp);
+    glLinkProgram(m_ProgramId);
+    glGetProgramiv(m_ProgramId, GL_LINK_STATUS, &status);
     if (status != GL_TRUE) {
-        glGetProgramInfoLog(program, 1024, &read, error_msg);
+        glGetProgramInfoLog(m_ProgramId, 1024, &read, error_msg);
         log_fatal("compile error:", error_msg);
     }
-    glDetachShader(program, vsp);
-    glDetachShader(program, fsp);
+    glDetachShader(m_ProgramId, vsp);
+    glDetachShader(m_ProgramId, fsp);
     glDeleteShader(vsp);
     glDeleteShader(fsp);
-}
-
-void Shader::dispose() { glDeleteProgram(program); }
-
-void Shader::begin() { glUseProgram(program); }
-
-GLuint Shader::getProgram() {
-    return program;
-}
-
-void Shader::setParam(const char *name, const u32 &a) {
-    glUniform1ui(glGetUniformLocation(program, name), a);
-}
-
-void Shader::setParam(const char *name, const i32 &a) {
-    glUniform1i(glGetUniformLocation(program, name), a);
-}
-
-void Shader::setParam(const char *name, const Color &a) {
-    glUniform4fv(glGetUniformLocation(program, name), 1, a.data);
-}
-
-void Shader::setParam(const char *name, const Vec4 &a) {
-    glUniform4fv(glGetUniformLocation(program, name), 1, a.data);
-}
-
-void Shader::setParam(const char *name, const Vec3 &a) {
-    glUniform3fv(glGetUniformLocation(program, name), 1, a.data);
-}
-
-void Shader::setParam(const char *name, const Vec2 &a) {
-    glUniform2fv(glGetUniformLocation(program, name), 1, a.data);
-}
-
-void Shader::setParam(const char *name, const Mat4 &a) {
-    glUniformMatrix4fv(glGetUniformLocation(program, name), 1, GL_TRUE, a.data);
-}
-
-void Shader::setParam(const char *name, const f64 &a) {
-    glUniform1f(glGetUniformLocation(program, name), (f32) a);
-}
-
-void Shader::setParam(const char *name, const f32 &a) {
-    glUniform1f(glGetUniformLocation(program, name), a);
 }

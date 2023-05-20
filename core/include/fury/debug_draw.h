@@ -1,14 +1,8 @@
-//
-// Created by aryan on 3/21/20.
-//
-
-#ifndef GAME_DEBUG_DRAW_H
-#define GAME_DEBUG_DRAW_H
+#pragma once
 
 #include "vec2.h"
 #include "color.h"
 #include "shader.h"
-#include "entity.h"
 
 #define BUFFER_OFFSET(x)  ((const void*) (x))
 
@@ -26,9 +20,9 @@ struct GLRenderPoints {
 private:
     Mat4 view;
     Mat4 projection;
-    Shader sh;
+    Shader *sh;
     enum {
-        e_maxVertices = 512
+        e_maxVertices = 2048
     };
     Vec2 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
@@ -58,10 +52,10 @@ struct GLRenderLines {
 private:
     Mat4 view;
     Mat4 projection;
-    Shader sh;
+    Shader *sh;
 
     enum {
-        e_maxVertices = 2 * 512
+        e_maxVertices = 2 * 2048
     };
     Vec2 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
@@ -89,10 +83,10 @@ struct GLRenderTriangles {
 private:
     Mat4 view;
     Mat4 projection;
-    Shader sh;
+    Shader *sh;
 
     enum {
-        e_maxVertices = 3 * 512
+        e_maxVertices = 3 * 2048
     };
     Vec2 m_vertices[e_maxVertices];
     Color m_colors[e_maxVertices];
@@ -106,30 +100,32 @@ private:
     GLint m_colorAttribute;
 };
 
-struct DebugDraw: public Entity {
+struct DebugDraw {
 public:
-    void awake();
-    void render() override;
-    void dispose() override;
-    void setCamera(const Mat4 &v, const Mat4 &p);
+    static void Create();
 
-    void segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
+    static void Render();
 
-    void polygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    static void Destroy();
 
-    void solidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+    static void SetCamera(const Mat4 &v, const Mat4 &p);
 
-    void circle(const Vec2 &center, float radius, const Color &color);
-    void solidCircle(const Vec2 &center, float radius, const Color &color);
+    static void Segment(const Vec2 &p1, const Vec2 &p2, const Color &color);
 
-    void point(const Vec2 &p, float size, const Color &color);
-    void pivot(const Vec2 &p);
+    static void Polygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
 
+    static void SolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color);
+
+    static void Circle(const Vec2 &center, float radius, const Color &color);
+
+    static void SolidCircle(const Vec2 &center, float radius, const Color &color);
+
+    static void Point(const Vec2 &p, float size, const Color &color);
+
+    static void Pivot(const Vec2 &p);
 
 private:
-    GLRenderPoints *m_points;
-    GLRenderLines *m_lines;
-    GLRenderTriangles *m_triangles;
+    static GLRenderPoints *m_Points;
+    static GLRenderLines *m_Lines;
+    static GLRenderTriangles *m_Triangles;
 };
-
-#endif //GAME_DEBUG_DRAW_H

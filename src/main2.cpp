@@ -10,7 +10,7 @@ struct Joint {
 };
 
 struct Skeleton {
-    Vector<Joint*> joints{};
+    Vector<Joint *> joints{};
     f32 snapBackStrength = 1.0f;
 
     void add(Joint *j) {
@@ -34,7 +34,7 @@ struct Skeleton {
     }
 
 
-    void resolve(const Vec3& targetPosition) {
+    void resolve(const Vec3 &targetPosition) {
         for (int i = 0; i < m_Len - 1; i++) {
             auto j1 = joints.at(i);
             auto j2 = joints.at(i + 1);

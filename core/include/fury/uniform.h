@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef GAME_UNIFORM_H
-#define GAME_UNIFORM_H
+#pragma once
 
 #include <iostream>
 #include <ostream>
@@ -67,12 +62,11 @@ struct Uniform {
     };
 
 
-
     friend bool operator==(const Uniform &a, const Uniform &b) {
-        if(a.n != b.n)
+        if (a.n != b.n)
             return false;
         for (auto i = 0; i < a.n; i++) {
-            if(a[i] != b[i])
+            if (a[i] != b[i])
                 return false;
         }
         return true;
@@ -84,6 +78,7 @@ struct Uniform {
         }
         return *this;
     };
+
     Uniform<A, B, T> &operator=(const Uniform<A, B, T> &&a) {
         for (auto i = 0; i < this->n; i++) {
             this->data[i] = a[i];
@@ -159,5 +154,3 @@ struct Uniform {
     }
 
 };
-
-#endif //GAME_UNIFORM_H

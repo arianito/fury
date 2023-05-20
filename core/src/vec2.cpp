@@ -107,13 +107,28 @@ Vec2 Vec2::perpendicularCounterClockwise() const {
 }
 
 f32 Vec2::angle(const Vec2 &from, const Vec2 &to) {
-    float denominator = Math::sqrt(from.sqrMagnitude() * to.sqrMagnitude());
-    if (denominator < Math::KEPSILON_NORMAL)
-        return 0.0f;
-    float d = Math::clamp(dot(from, to) / denominator, -1.0F, 1.0F);
-    return Math::arcCos(d);
+    auto dif = (to - from).normal();
+    return Math::arcTan2(dif.y(), dif.x());
 }
 
 f32 Vec2::distance(const Vec2 &a, const Vec2 &b) {
     return (a - b).magnitude();
+}
+
+
+const Vec2 Vec2::lerp(const Vec2 &a, const Vec2 &b, const float &t) {
+
+    auto t0 = Math::clamp01(t);
+    return Vec2{
+            a[0] + (b[0] - a[0]) * t0,
+            a[1] + (b[1] - a[1]) * t0,
+    };
+}
+
+const Vec2 Vec2::lerpUnclamped(const Vec2 &a, const Vec2 &b, const float &t) {
+
+    return Vec2{
+            a[0] + (b[0] - a[0]) * t,
+            a[1] + (b[1] - a[1]) * t,
+    };
 }

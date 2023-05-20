@@ -1,5 +1,4 @@
-#ifndef FURY_TRACE_H
-#define FURY_TRACE_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -30,26 +29,24 @@ void log_trace(Args const &... args) {
 
 
 template<typename... Args>
-void log_info(const char * __format, Args const &... args) {
-    fprintf(stdout, __format, args...);
-}
-template<typename... Args>
-void log_error(const char * __format, Args const &... args) {
-    fprintf(stderr, __format, args...);
+void log_info(const char *__format, Args const &... args) {
+    fprintf(stdout, (std::string(__format)+"\n").c_str(), args...);
 }
 
 template<typename... Args>
-void log_fatal(const char * __format, Args const &... args) {
-    fprintf(stderr, __format, args...);
-    glfwTerminate();
+void log_error(const char *__format, Args const &... args) {
+    fprintf(stderr, (std::string(__format)+"\n").c_str(), args...);
+}
+
+template<typename... Args>
+void log_fatal(const char *__format, Args const &... args) {
+    fprintf(stderr, (std::string(__format)+"\n").c_str(), args...);
     exit(-1);
 }
 
 template<typename... Args>
-String join_string(Args const &... args) {
+std::string join_string(Args const &... args) {
     std::ostringstream os;
     int unpack[]{0, (os << args, 0)...};
     return os.str();
 }
-
-#endif

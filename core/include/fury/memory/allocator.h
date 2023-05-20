@@ -1,9 +1,4 @@
-//
-// Created by aryan on 3/20/20.
-//
-
-#ifndef GAME_ALLOCATOR_H
-#define GAME_ALLOCATOR_H
+#pragma once
 
 #include "fury/trace.h"
 #include "fury/system.h"
@@ -12,37 +7,38 @@
 class Allocator {
 protected:
 
-    const size m_MemorySize;
+    const size_t m_MemorySize;
     const void *m_MemoryFirstAddress;
 
-    size m_MemoryUsed;
+    size_t m_MemoryUsed;
     u64 m_MemoryAllocations;
 
 public:
 
-    Allocator(size memSize, const void *mem);
+    Allocator(size_t memSize, const void *mem);
 
     virtual ~Allocator();
 
-    virtual void *allocate(size size, u8 alignment) = 0;
+    virtual void *Allocate(size_t size, u8 alignment) = 0;
 
-    virtual void free(void *p) = 0;
+    virtual void Free(void *p) = 0;
 
-    virtual void clear() = 0;
+    virtual void Clear() = 0;
 
     static inline void *alignForward(void *address, u8 alignment) {
-        return (void *) ((reinterpret_cast<uptr>(address) + static_cast<uptr>(alignment - 1)) &
-                         static_cast<uptr>(~(u8)(alignment - 1)));
+        return (void *) ((reinterpret_cast<std::uintptr_t>(address) + static_cast<std::uintptr_t>(alignment - 1)) &
+                         static_cast<std::uintptr_t>(~(u8) (alignment - 1)));
     }
 
-    static inline u8 getAdjustment(const void *address, u8 alignment) {
-        u8 adjustment = alignment - (reinterpret_cast<uptr>(address) & static_cast<uptr>(alignment - 1));
+    static inline u8 GetAdjustment(const void *address, u8 alignment) {
+        u8 adjustment =
+                alignment - (reinterpret_cast<std::uintptr_t>(address) & static_cast<std::uintptr_t>(alignment - 1));
 
         return adjustment == alignment ? 0 : adjustment;
     }
 
-    static inline u8 getAdjustment(const void *address, u8 alignment, u8 extra) {
-        u8 adjustment = getAdjustment(address, alignment);
+    static inline u8 GetAdjustment(const void *address, u8 alignment, u8 extra) {
+        u8 adjustment = GetAdjustment(address, alignment);
 
         u8 neededSpace = extra;
 
@@ -57,22 +53,20 @@ public:
         return adjustment;
     }
 
-    [[nodiscard]] inline size getMemorySize() const {
+    inline size_t GetMemorySize() const {
         return this->m_MemorySize;
     }
 
-    [[nodiscard]] inline const void *getMemoryAddress0() const {
+    inline const void *GetMemoryAddress0() const {
         return this->m_MemoryFirstAddress;
     }
 
-    [[nodiscard]] inline size getUsedMemory() const {
+    inline size_t GetUsedMemory() const {
         return this->m_MemoryUsed;
     }
 
-    [[nodiscard]] inline u64 getAllocationCount() const {
+    inline u64 GetAllocationCount() const {
         return this->m_MemoryAllocations;
     }
 
 };
-
-#endif

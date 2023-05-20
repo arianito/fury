@@ -1,9 +1,4 @@
-//
-// Created by Aryan on 10/28/18.
-//
-
-#ifndef FURY_PRIMITIVES_MAT3_H
-#define FURY_PRIMITIVES_MAT3_H
+#pragma once
 
 #include "system.h"
 #include "uniform.h"
@@ -56,10 +51,10 @@ struct Mat3 : Uniform<3, 3> {
     friend Mat3 operator/(const Mat3 &a, const f32 &b);
 
 
-    [[nodiscard]] f32 determinant() const;
+    f32 determinant() const;
 
 
-    [[nodiscard]] Mat3 invert() const;
+    Mat3 invert() const;
 
 
     static Mat3 createTranslation(const Uniform<2, 1> &a);
@@ -69,5 +64,3 @@ struct Mat3 : Uniform<3, 3> {
 
     static Mat3 createScale(const Uniform<2, 1> &a);
 };
-
-#endif //GAME_MAT4_H
