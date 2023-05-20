@@ -18,12 +18,12 @@ const Quaternion Quaternion::fromAngleAxis(const f32 &angle, const Vec3 &axis) {
 }
 
 const Quaternion Quaternion::fromEulerAngles(const f32 &pitch, const f32 &roll, const f32 &yaw) {
-    f32 cy = Math::cos(yaw * 0.5f);
-    f32 sy = Math::sin(yaw * 0.5f);
+    f32 cy = Math::cos(pitch * 0.5f);
+    f32 sy = Math::sin(pitch * 0.5f);
     f32 cr = Math::cos(roll * 0.5f);
     f32 sr = Math::sin(roll * 0.5f);
-    f32 cp = Math::cos(pitch * 0.5f);
-    f32 sp = Math::sin(pitch * 0.5f);
+    f32 cp = Math::cos(yaw * 0.5f);
+    f32 sp = Math::sin(yaw * 0.5f);
 
     return Quaternion{
             cy * cr * cp + sy * sr * sp,

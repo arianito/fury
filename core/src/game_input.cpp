@@ -10,10 +10,12 @@ u8 Input::m_KeyboardState[350];
 u8 Input::m_OldKeyboardState[350];
 u8 Input::m_MouseState[8];
 u8 Input::m_OldMouseState[8];
-float Input::m_Axises[2];
-float Input::m_AxisVelocities[2];
+float Input::m_Axises[4];
+float Input::m_AxisVelocities[4];
 double Input::m_XPos = 0;
 double Input::m_YPos = 0;
+double Input::m_oldXPos = 0;
+double Input::m_oldYPos = 0;
 
 void Input::MoveAxis(u16 ax, bool low, bool high) {
     auto delta = Time::DeltaTime;
@@ -31,7 +33,12 @@ void Input::Update() {
         m_OldMouseState[i] = m_MouseState[i];
     MoveAxis(AXIS_HORIZONTAL, KeyPress(KEY_LEFT) || KeyPress(KEY_A), KeyPress(KEY_RIGHT) || KeyPress(KEY_D));
     MoveAxis(AXIS_VERTICAL, KeyPress(KEY_DOWN) || KeyPress(KEY_S), KeyPress(KEY_UP) || KeyPress(KEY_W));
+
     glfwGetCursorPos(m_Window, &m_XPos, &m_YPos);
+    m_Axises[AXIS_MOUSE_Y] = (f32)(m_oldYPos - m_YPos);
+    m_Axises[AXIS_MOUSE_X] = (f32)(m_XPos - m_oldXPos);
+    m_oldXPos = m_XPos;
+    m_oldYPos = m_YPos;
 }
 
 float Input::GetAxis(u8 a) {

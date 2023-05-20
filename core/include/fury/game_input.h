@@ -7,6 +7,8 @@
 
 #define AXIS_VERTICAL 0
 #define AXIS_HORIZONTAL 1
+#define AXIS_MOUSE_Y 2
+#define AXIS_MOUSE_X 3
 
 #define MOUSE_BUTTON_1         0
 #define MOUSE_BUTTON_2         1
@@ -179,10 +181,13 @@ private:
     static u8 m_OldKeyboardState[350];
     static u8 m_MouseState[8];
     static u8 m_OldMouseState[8];
-    static float m_Axises[2];
-    static float m_AxisVelocities[2];
+    static float m_Axises[4];
+    static float m_AxisVelocities[4];
     static GLFWwindow *m_Window;
     static double m_XPos;
     static double m_YPos;
+
+    static double m_oldXPos;
+    static double m_oldYPos;
     static void MoveAxis(u16 ax, bool low, bool high);
 };

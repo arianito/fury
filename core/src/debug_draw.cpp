@@ -10,7 +10,7 @@ void GLRenderPoints::create() {
 
 uniform mat4 projection;
 uniform mat4 view;
-layout(location = 0) in vec2 v_position;
+layout(location = 0) in vec3 v_position;
 layout(location = 1) in vec4 v_color;
 layout(location = 2) in float v_size;
 out vec4 f_color;
@@ -18,7 +18,7 @@ out vec4 f_color;
 void main(void)
 {
   f_color = v_color;
-  gl_Position = projection * view * vec4(v_position, 0.5f, 1.0f);
+  gl_Position = projection * view * vec4(v_position, 1.0f);
   gl_PointSize = v_size;
 }
 )", R"(
@@ -48,7 +48,7 @@ void main(void)
 
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glVertexAttribPointer(m_vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(m_vertexAttribute, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
@@ -79,7 +79,7 @@ void GLRenderPoints::dispose() {
     sh->~Shader();
 }
 
-void GLRenderPoints::vertex(const Vec2 &v, const Color &c, f32 size) {
+void GLRenderPoints::vertex(const Vec3 &v, const Color &c, f32 size) {
     if (m_count == e_maxVertices)
         render();
 
@@ -103,7 +103,7 @@ void GLRenderPoints::render() {
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_POINT_SPRITE);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec2), m_vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec3), m_vertices);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Color), m_colors);
@@ -135,14 +135,14 @@ void GLRenderLines::create() {
 
 uniform mat4 projection;
 uniform mat4 view;
-layout(location = 0) in vec2 v_position;
+layout(location = 0) in vec3 v_position;
 layout(location = 1) in vec4 v_color;
 out vec4 f_color;
 
 void main(void)
 {
   f_color = v_color;
-  gl_Position = projection * view * vec4(v_position, 0.2f, 1.0f);
+  gl_Position = projection * view * vec4(v_position, 1.0f);
 }
 )", R"(
 #version 330 core
@@ -168,7 +168,7 @@ void main(void)
 
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glVertexAttribPointer(m_vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(m_vertexAttribute, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
@@ -196,7 +196,7 @@ void GLRenderLines::dispose() {
     sh->~Shader();
 }
 
-void GLRenderLines::vertex(const Vec2 &v, const Color &c) {
+void GLRenderLines::vertex(const Vec3 &v, const Color &c) {
     if (m_count == e_maxVertices)
         render();
 
@@ -220,7 +220,7 @@ void GLRenderLines::render() {
     glBindVertexArray(m_vaoId);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec2), m_vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec3), m_vertices);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Color), m_colors);
@@ -247,14 +247,14 @@ void GLRenderTriangles::create() {
 
 uniform mat4 projection;
 uniform mat4 view;
-layout(location = 0) in vec2 v_position;
+layout(location = 0) in vec3 v_position;
 layout(location = 1) in vec4 v_color;
 out vec4 f_color;
 
 void main(void)
 {
   f_color = v_color;
-  gl_Position = projection * view * vec4(v_position, 0.0f, 1.0f);
+  gl_Position = projection * view * vec4(v_position, 1.0f);
 }
 )", R"(
 #version 330 core
@@ -281,7 +281,7 @@ void main(void)
 
     // Vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glVertexAttribPointer(m_vertexAttribute, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glVertexAttribPointer(m_vertexAttribute, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glBufferData(GL_ARRAY_BUFFER, sizeof(m_vertices), m_vertices, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
@@ -308,7 +308,7 @@ void GLRenderTriangles::dispose() {
     sh->~Shader();
 }
 
-void GLRenderTriangles::vertex(const Vec2 &v, const Color &c) {
+void GLRenderTriangles::vertex(const Vec3 &v, const Color &c) {
     if (m_count == e_maxVertices)
         render();
 
@@ -331,7 +331,7 @@ void GLRenderTriangles::render() {
 
     glLineWidth(2);
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[0]);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec2), m_vertices);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Vec3), m_vertices);
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboIds[1]);
     glBufferSubData(GL_ARRAY_BUFFER, 0, m_count * sizeof(Color), m_colors);
@@ -389,22 +389,22 @@ void DebugDraw::SetCamera(const Mat4 &v, const Mat4 &p) {
     m_Points->update(v, p);
 }
 
-void DebugDraw::Segment(const Vec2 &p1, const Vec2 &p2, const Color &color) {
+void DebugDraw::Segment(const Vec3 &p1, const Vec3 &p2, const Color &color) {
     m_Lines->vertex(p1, color);
     m_Lines->vertex(p2, color);
 }
 
-void DebugDraw::Polygon(const Vec2 *vertices, u32 vertexCount, const Color &color) {
-    Vec2 p1 = vertices[vertexCount - 1];
+void DebugDraw::Polygon(const Vec3 *vertices, u32 vertexCount, const Color &color) {
+    Vec3 p1 = vertices[vertexCount - 1];
     for (u32 i = 0; i < vertexCount; ++i) {
-        Vec2 p2 = vertices[i];
+        Vec3 p2 = vertices[i];
         m_Lines->vertex(p1, color);
         m_Lines->vertex(p2, color);
         p1 = p2;
     }
 }
 
-void DebugDraw::SolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color &color) {
+void DebugDraw::SolidPolygon(const Vec3 *vertices, u32 vertexCount, const Color &color) {
 
     for (u32 i = 1; i < vertexCount - 1; ++i) {
         m_Triangles->vertex(vertices[0], color);
@@ -413,18 +413,18 @@ void DebugDraw::SolidPolygon(const Vec2 *vertices, u32 vertexCount, const Color 
     }
 }
 
-void DebugDraw::Circle(const Vec2 &center, float radius, const Color &color) {
+void DebugDraw::Circle(const Vec3 &center, float radius, const Color &color) {
     const float k_segments = 8.0f;
     const float k_increment = 2.0f * Math::PI / k_segments;
     float sinInc = sinf(k_increment);
     float cosInc = cosf(k_increment);
-    Vec2 r1(1.0f, 0.0f);
-    Vec2 v1 = center + radius * r1;
+    Vec3 r1(1.0f, 0.0f);
+    Vec3 v1 = center + radius * r1;
     for (u32 i = 0; i < k_segments; ++i) {
-        Vec2 r2;
+        Vec3 r2;
         r2.x() = cosInc * r1.x() - sinInc * r1.y();
         r2.y() = sinInc * r1.x() + cosInc * r1.y();
-        Vec2 v2 = center + radius * r2;
+        Vec3 v2 = center + radius * r2;
         m_Lines->vertex(v1, color);
         m_Lines->vertex(v2, color);
         r1 = r2;
@@ -432,20 +432,20 @@ void DebugDraw::Circle(const Vec2 &center, float radius, const Color &color) {
     }
 }
 
-void DebugDraw::SolidCircle(const Vec2 &center, float radius, const Color &color) {
+void DebugDraw::SolidCircle(const Vec3 &center, float radius, const Color &color) {
     const float k_segments = 8.0f;
     const float k_increment = 2.0f * Math::PI / k_segments;
     float sinInc = sinf(k_increment);
     float cosInc = cosf(k_increment);
     const auto &v0 = center;
-    Vec2 r1(cosInc, sinInc);
-    Vec2 v1 = center + radius * r1;
+    Vec3 r1(cosInc, sinInc);
+    Vec3 v1 = center + radius * r1;
 
     for (u32 i = 0; i < k_segments; ++i) {
-        Vec2 r2;
+        Vec3 r2;
         r2.x() = cosInc * r1.x() - sinInc * r1.y();
         r2.y() = sinInc * r1.x() + cosInc * r1.y();
-        Vec2 v2 = center + radius * r2;
+        Vec3 v2 = center + radius * r2;
         m_Triangles->vertex(v0, color);
         m_Triangles->vertex(v1, color);
         m_Triangles->vertex(v2, color);
@@ -455,17 +455,21 @@ void DebugDraw::SolidCircle(const Vec2 &center, float radius, const Color &color
 
 }
 
-void DebugDraw::Point(const Vec2 &p, float size, const Color &color) {
+void DebugDraw::Point(const Vec3 &p, float size, const Color &color) {
     m_Points->vertex(p, color, size);
 }
 
-void DebugDraw::Pivot(const Vec2 &p) {
+void DebugDraw::Pivot(const Vec3 &p) {
     auto red = Color(1, 0, 0, 0.5);
     auto green = Color(0, 1, 0, 0.5);
-
-    m_Lines->vertex(p, green);
-    m_Lines->vertex(p + Vec2::up * 0.2, green);
+    auto blue = Color(0, 0, 1, 0.5);
 
     m_Lines->vertex(p, red);
-    m_Lines->vertex(p + Vec2::right * 0.2, red);
+    m_Lines->vertex(p + Vec3::right, red);
+
+    m_Lines->vertex(p, green);
+    m_Lines->vertex(p + Vec3::back, green);
+
+    m_Lines->vertex(p, blue);
+    m_Lines->vertex(p + Vec3::up, blue);
 }

@@ -5,12 +5,12 @@ struct Player : public Component {
 };
 
 struct Projectile : public Component {
-    Vec2 m_InitialPosition;
-    Vec2 m_Position;
+    Vec3 m_InitialPosition;
+    Vec3 m_Position;
     f32 m_Rotation;
     f32 m_Speed;
 
-    explicit Projectile(Vec2 pos, f32 rot, f32 speed) :
+    explicit Projectile(Vec3 pos, f32 rot, f32 speed) :
             Component(),
             m_Position(pos),
             m_InitialPosition(pos),
@@ -19,11 +19,11 @@ struct Projectile : public Component {
 };
 
 struct Transform : public Component {
-    Vec2 m_Position;
+    Vec3 m_Position;
     f32 m_Rotation;
 
     explicit Transform() : Component(),
-                           m_Position(Vec2::zero),
+                           m_Position(Vec3::zero),
                            m_Rotation(0) {}
 };
 
@@ -39,8 +39,8 @@ struct MovementSystem : public System<Transform> {
             p_transform->m_Rotation = Math::lerp(p_transform->m_Rotation, p_transform->m_Rotation - horizontal,
                                                  Time::DeltaTime);
             auto angle = p_transform->m_Rotation;
-            p_transform->m_Position = Vec2::lerp(p_transform->m_Position, p_transform->m_Position +
-                                                                          Vec2(Math::cos(angle), Math::sin(angle)) *
+            p_transform->m_Position = Vec3::lerp(p_transform->m_Position, p_transform->m_Position +
+                                                                          Vec3(Math::cos(angle), Math::sin(angle)) *
                                                                           vertical,
                                                  Time::DeltaTime);
         }
@@ -52,20 +52,20 @@ struct ProjectileSystem : public System<Projectile> {
         for (auto &compTuple: m_Components) {
             Projectile *p_projectile = std::get<Projectile *>(compTuple);
 
-            auto angle = Vec2(Math::cos(p_projectile->m_Rotation), Math::sin(p_projectile->m_Rotation));
+            auto angle = Vec3(Math::cos(p_projectile->m_Rotation), Math::sin(p_projectile->m_Rotation));
             p_projectile->m_Position = p_projectile->m_Position +
                                        angle *
                                        p_projectile->m_Speed *
                                        Time::DeltaTime;
 
-            auto d = Vec2::distance(p_projectile->m_Position, p_projectile->m_InitialPosition) + 0.1f;
+            auto d = Vec3::distance(p_projectile->m_Position, p_projectile->m_InitialPosition) + 0.1f;
             if (d > 10) {
                 m_EntityManager->DestroyEntity(p_projectile->GetEntityId());
             }
 
-            DebugDraw::Segment(
+            DebugDraw::SolidCircle(
                     p_projectile->m_Position,
-                    p_projectile->m_Position + angle * 0.05f,
+                    0.05f,
                     Color::red);
         }
     }
@@ -95,11 +95,11 @@ struct RenderSystem : public System<Transform, Renderable> {
         for (auto &compTuple: m_Components) {
             Transform *p_player = std::get<Transform *>(compTuple);
             auto angle = p_player->m_Rotation;
-            DebugDraw::Circle(p_player->m_Position, 0.1f, Color::red);
+            DebugDraw::SolidCircle(p_player->m_Position, 0.1f, Color::red);
             DebugDraw::Segment(
                     p_player->m_Position,
-                    p_player->m_Position + Vec2(Math::cos(angle), Math::sin(angle)) * 0.1f,
-                    Color::red
+                    p_player->m_Position + Vec3(Math::cos(angle), Math::sin(angle)) * 0.1f,
+                    Color::white
             );
         }
     }
@@ -154,7 +154,7 @@ int main() {
         }
 
         void Render() override {
-            DebugDraw::Pivot(Vec2::zero);
+            DebugDraw::Pivot(Vec3::zero);
         }
     };
     return Win1().run();

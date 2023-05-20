@@ -78,7 +78,7 @@ i32 Window::run() {
         return -1;
     }
 
-    glfwWindowHint(GLFW_SAMPLES, 2);
+    glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -149,13 +149,15 @@ i32 Window::run() {
         }
         this->Update();
 
-        glClearColor(0.1, 0.2, 0.3, 0.1);
+        glDisable(GL_CULL_FACE);
+        glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glBlendEquation(GL_ADD);
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
         this->Render();
 
